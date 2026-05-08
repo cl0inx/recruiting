@@ -8,182 +8,131 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg:       #F5F3EE;
-      --surface:  #FFFFFF;
-      --border:   #E2DDD5;
-      --text:     #1A1814;
-      --muted:    #7A746A;
-      --accent:   #2A4D3C;
-      --accent2:  #C85A2A;
-      --info:     #1C3D6E;
-      --tag-bg:   #EAE6DE;
-      --radius:   10px;
-      --shadow:   0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+      --bg:      #F5F3EE;
+      --surface: #FFFFFF;
+      --border:  #E2DDD5;
+      --text:    #1A1814;
+      --muted:   #7A746A;
+      --accent:  #2A4D3C;
+      --accent2: #C85A2A;
+      --info:    #1C3D6E;
+      --tag-bg:  #EAE6DE;
+      --radius:  10px;
+      --shadow:  0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 15px; }
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-    /* ── Header ── */
     header {
-      background: var(--accent);
-      color: #fff;
+      background: var(--accent); color: #fff;
       padding: 1.5rem 2rem;
-      display: flex;
-      align-items: baseline;
-      gap: 1rem;
-      flex-wrap: wrap;
+      display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
     }
-    header h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.6rem;
-      font-weight: 400;
-      letter-spacing: -.01em;
-    }
-    header span {
-      font-size: .75rem;
-      opacity: .6;
-      font-family: 'DM Mono', monospace;
-      letter-spacing: .04em;
-    }
-    .ba-badge {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: .72rem;
-      font-family: 'DM Mono', monospace;
-      opacity: .8;
-    }
+    header h1 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; font-weight: 400; }
+    header span { font-size: .75rem; opacity: .6; font-family: 'DM Mono', monospace; }
+    .ba-badge { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: .72rem; font-family: 'DM Mono', monospace; opacity: .8; }
     .ba-dot { width: 7px; height: 7px; border-radius: 50%; background: #6ee7b7; }
     .ba-dot.offline { background: #fca5a5; }
 
-    /* ── Layout ── */
     .layout {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 1.5rem;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
+      display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem;
+      max-width: 1140px; margin: 0 auto; padding: 2rem 1.5rem;
     }
-    @media (max-width: 820px) {
-      .layout { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
 
-    /* ── Cards ── */
     .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem 1.5rem;
-      box-shadow: var(--shadow);
-      margin-bottom: 1rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow); margin-bottom: 1rem;
     }
     .card-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1rem;
-      font-weight: 400;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text);
+      font-family: 'DM Serif Display', serif; font-size: 1rem; font-weight: 400;
+      margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;
     }
-    .card-title .icon {
-      width: 22px; height: 22px;
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: .8rem;
-    }
-    .icon-green  { background: #D1FAE5; color: var(--accent); }
-    .icon-amber  { background: #FEF3C7; color: #92400E; }
-    .icon-blue   { background: #DBEAFE; color: var(--info); }
-    .icon-red    { background: #FEE2E2; color: #991B1B; }
+    .icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: .8rem; }
+    .icon-green { background: #D1FAE5; color: var(--accent); }
+    .icon-amber { background: #FEF3C7; color: #92400E; }
+    .icon-blue  { background: #DBEAFE; color: var(--info); }
+    .icon-red   { background: #FEE2E2; color: #991B1B; }
+    .icon-warn  { background: #FFF3CD; color: #856404; }
 
-    /* ── Form fields ── */
     .field-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 7px 0;
-      border-bottom: 1px solid var(--tag-bg);
-      gap: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 7px 0; border-bottom: 1px solid var(--tag-bg); gap: 12px;
     }
     .field-row:last-child { border-bottom: none; }
     .field-label { font-size: .85rem; color: var(--text); flex: 1; }
     .field-hint  { font-size: .72rem; color: var(--muted); margin-top: 1px; }
     input[type=number], input[type=text], select {
-      font-family: 'DM Mono', monospace;
-      font-size: .82rem;
-      width: 120px;
-      text-align: right;
-      padding: 5px 8px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: var(--bg);
-      color: var(--text);
-      outline: none;
-      transition: border-color .15s;
+      font-family: 'DM Mono', monospace; font-size: .82rem;
+      width: 120px; text-align: right; padding: 5px 8px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg); color: var(--text); outline: none; transition: border-color .15s;
     }
     input[type=text] { text-align: left; width: 160px; }
     select { width: 140px; text-align: left; cursor: pointer; }
     input:focus, select:focus { border-color: var(--accent); }
 
+    /* Jobbörsen-Tabelle */
+    .job-board-table { width: 100%; border-collapse: collapse; margin-top: .5rem; }
+    .job-board-table th {
+      font-size: .72rem; color: var(--muted); text-align: left;
+      padding: 4px 6px; border-bottom: 1px solid var(--border); font-weight: 500;
+    }
+    .job-board-table td { padding: 5px 6px; font-size: .82rem; vertical-align: middle; }
+    .job-board-table tr:not(:last-child) td { border-bottom: 1px solid var(--tag-bg); }
+    .job-board-table input { width: 100%; min-width: 60px; }
+    .job-board-table input[type=text] { width: 100%; min-width: 80px; }
+    .del-btn {
+      background: none; border: none; cursor: pointer; color: var(--muted);
+      font-size: 1rem; padding: 2px 6px; border-radius: 4px; transition: color .15s;
+    }
+    .del-btn:hover { color: #991B1B; }
+    .add-btn {
+      font-size: .78rem; padding: 5px 12px; margin-top: .5rem;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      border-radius: 6px; cursor: pointer; color: var(--text); transition: background .15s;
+    }
+    .add-btn:hover { background: var(--border); }
+    .warn-row {
+      background: #FFF8E1; border: 1px solid #FFE082;
+      border-radius: 6px; padding: 6px 10px; font-size: .78rem;
+      color: #856404; margin-top: 6px; display: none;
+    }
 
+    /* Engpass-Badge */
+    .engpass-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: .72rem; font-family: 'DM Mono', monospace; font-weight: 500;
+      padding: 3px 10px; border-radius: 20px; margin-left: 8px;
+    }
+    .engpass-ja   { background: #FEE2E2; color: #991B1B; }
+    .engpass-nein { background: #D1FAE5; color: #065F46; }
+    .engpass-unk  { background: var(--tag-bg); color: var(--muted); }
 
-    /* ── Result panel ── */
+    /* Ergebnis */
     .result-panel { position: sticky; top: 1.5rem; }
-    .metric-big {
-      font-family: 'DM Serif Display', serif;
-      font-size: 2.8rem;
-      font-weight: 400;
-      color: var(--accent);
-      line-height: 1;
-      margin: .5rem 0 .25rem;
-    }
+    .metric-big { font-family: 'DM Serif Display', serif; font-size: 2.8rem; font-weight: 400; color: var(--accent); line-height: 1; margin: .5rem 0 .25rem; }
     .metric-sub { font-size: .75rem; color: var(--muted); font-family: 'DM Mono', monospace; }
-
-    .split-row {
-      display: flex; gap: 8px; margin: 1rem 0;
-    }
-    .split-box {
-      flex: 1;
-      background: var(--tag-bg);
-      border-radius: 8px;
-      padding: .75rem;
-    }
+    .split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 1rem 0; }
+    .split-box { background: var(--tag-bg); border-radius: 8px; padding: .75rem; }
     .split-box .label { font-size: .7rem; color: var(--muted); margin-bottom: 3px; }
-    .split-box .val   { font-family: 'DM Mono', monospace; font-size: .9rem; color: var(--text); font-weight: 500; }
+    .split-box .val   { font-family: 'DM Mono', monospace; font-size: .88rem; color: var(--text); font-weight: 500; }
+    .split-box.highlight { background: #FEF3C7; }
+    .split-box.highlight .val { color: #78350F; }
 
-    /* ── Bar chart ── */
     .bar-list { margin-top: .75rem; }
     .bar-row  { margin-bottom: 8px; }
     .bar-meta { display: flex; justify-content: space-between; font-size: .72rem; color: var(--muted); margin-bottom: 3px; }
     .bar-track { height: 6px; background: var(--tag-bg); border-radius: 3px; overflow: hidden; }
     .bar-fill  { height: 100%; border-radius: 3px; transition: width .4s ease; }
 
-    /* ── BA data panel ── */
     .ba-panel {
-      background: #EEF4F0;
-      border: 1px solid #C6DDD0;
-      border-radius: var(--radius);
-      padding: 1rem 1.25rem;
-      margin-top: 1rem;
+      background: #EEF4F0; border: 1px solid #C6DDD0;
+      border-radius: var(--radius); padding: 1rem 1.25rem; margin-top: 1rem;
     }
-    .ba-panel h3 {
-      font-family: 'DM Mono', monospace;
-      font-size: .7rem;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      margin-bottom: .75rem;
-    }
+    .ba-panel h3 { font-family: 'DM Mono', monospace; font-size: .7rem; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .75rem; }
     .ba-row { display: flex; justify-content: space-between; font-size: .8rem; padding: 4px 0; border-bottom: 1px solid #C6DDD0; }
     .ba-row:last-child { border-bottom: none; }
     .ba-row .k { color: var(--muted); }
@@ -191,99 +140,47 @@
     .ba-loading { font-size: .78rem; color: var(--muted); font-style: italic; text-align: center; padding: .5rem; }
     .ba-error   { font-size: .75rem; color: var(--accent2); font-family: 'DM Mono', monospace; text-align: center; padding: .5rem; }
 
-    /* ── Benchmark pill ── */
-    .benchmark-row {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-top: .75rem; padding-top: .75rem;
-      border-top: 1px dashed var(--border);
-    }
+    .benchmark-row { display: flex; align-items: center; justify-content: space-between; margin-top: .75rem; padding-top: .75rem; border-top: 1px dashed var(--border); }
     .benchmark-label { font-size: .75rem; color: var(--muted); }
-    .benchmark-pill {
-      font-family: 'DM Mono', monospace;
-      font-size: .72rem;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-weight: 500;
-    }
+    .benchmark-pill { font-family: 'DM Mono', monospace; font-size: .72rem; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
     .pill-ok     { background: #D1FAE5; color: #065F46; }
     .pill-warn   { background: #FEF3C7; color: #78350F; }
     .pill-danger { background: #FEE2E2; color: #991B1B; }
 
-    /* ── History ── */
-    .history-item {
-      font-size: .78rem;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--tag-bg);
-      display: flex; justify-content: space-between;
-      cursor: pointer; color: var(--muted);
-      transition: color .15s;
-    }
+    .history-item { font-size: .78rem; padding: 8px 0; border-bottom: 1px solid var(--tag-bg); display: flex; justify-content: space-between; cursor: pointer; color: var(--muted); transition: color .15s; }
     .history-item:hover { color: var(--text); }
     .history-item:last-child { border-bottom: none; }
     .history-item .h-title { font-weight: 500; color: var(--text); }
     .history-item .h-cost  { font-family: 'DM Mono', monospace; color: var(--accent); }
     .no-history { font-size: .8rem; color: var(--muted); font-style: italic; text-align: center; padding: 1rem; }
 
-    /* ── Buttons ── */
-    .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 8px 16px;
-      border: none; border-radius: 7px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: .82rem; font-weight: 500;
-      cursor: pointer; transition: all .15s;
-    }
-    .btn-primary { background: var(--accent); color: #fff; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: none; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: .82rem; font-weight: 500; cursor: pointer; transition: all .15s; }
+    .btn-primary   { background: var(--accent); color: #fff; }
     .btn-primary:hover { background: #1e3a2c; }
     .btn-secondary { background: var(--tag-bg); color: var(--text); }
     .btn-secondary:hover { background: var(--border); }
     .btn-row { display: flex; gap: 8px; margin-top: .75rem; flex-wrap: wrap; }
 
-    /* ── Autocomplete ── */
     .autocomplete-wrap { position: relative; }
-    .autocomplete-input { width: 100%; }
     .autocomplete-list {
-      position: absolute;
-      right: 0;
-      top: calc(100% + 4px);
-      width: 320px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: 0 4px 16px rgba(0,0,0,.1);
-      z-index: 100;
-      overflow: hidden;
+      position: absolute; right: 0; top: calc(100% + 4px); width: 320px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,.1);
+      z-index: 100; overflow: hidden;
     }
-    .autocomplete-item {
-      padding: 8px 12px;
-      font-size: .82rem;
-      cursor: pointer;
-      border-bottom: 1px solid var(--tag-bg);
-      color: var(--text);
-      transition: background .1s;
-    }
+    .autocomplete-item { padding: 8px 12px; font-size: .82rem; cursor: pointer; border-bottom: 1px solid var(--tag-bg); color: var(--text); transition: background .1s; }
     .autocomplete-item:last-child { border-bottom: none; }
     .autocomplete-item:hover { background: var(--tag-bg); }
-    .autocomplete-item .ac-label { font-weight: 500; }
-    .autocomplete-item .ac-kldb { font-size: .7rem; color: var(--muted); font-family: 'DM Mono', monospace; }
     .autocomplete-loading { padding: 8px 12px; font-size: .8rem; color: var(--muted); font-style: italic; }
 
-    footer {
-      text-align: center;
-      padding: 2rem;
-      font-size: .72rem;
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      border-top: 1px solid var(--border);
-      margin-top: 2rem;
-    }
+    footer { text-align: center; padding: 2rem; font-size: .72rem; color: var(--muted); font-family: 'DM Mono', monospace; border-top: 1px solid var(--border); margin-top: 2rem; }
   </style>
 </head>
 <body>
 
 <header>
   <h1>Einstellungskosten-Kalkulator</h1>
-  <span>v1.0 · HR Analytics</span>
+  <span>v2.0 · HR Analytics</span>
   <div class="ba-badge">
     <div class="ba-dot offline" id="baDot"></div>
     <span id="baStatus">BA-Daten nicht verbunden</span>
@@ -291,325 +188,380 @@
 </header>
 
 <div class="layout">
+<div>
 
-  <!-- ── LEFT: Eingabe ── -->
-  <div>
-
-    <!-- Stellenprofil -->
-    <div class="card">
-      <div class="card-title">
-        <div class="icon icon-blue">💼</div>
-        Stellenprofil
+  <!-- Stellenprofil -->
+  <div class="card">
+    <div class="card-title"><div class="icon icon-blue">💼</div> Stellenprofil</div>
+    <div class="field-row">
+      <div class="field-label">Berufsbezeichnung (BA-Suche)</div>
+      <div class="autocomplete-wrap">
+        <input type="text" id="jobTitle" class="autocomplete-input" placeholder="z. B. Buchhalter" autocomplete="off" oninput="onBerufInput(this.value)" style="width:160px; text-align:left;" />
+        <div class="autocomplete-list" id="acList" style="display:none"></div>
       </div>
-
-      <div class="field-row">
-        <div class="field-label">Berufsbezeichnung (BA-Suche)</div>
-        <div class="autocomplete-wrap">
-          <input type="text" id="jobTitle" class="autocomplete-input" placeholder="z. B. Buchhalter" autocomplete="off" oninput="onBerufInput(this.value)" />
-          <div class="autocomplete-list" id="acList" style="display:none"></div>
-        </div>
+    </div>
+    <div class="field-row">
+      <div>
+        <div class="field-label">Engpassberuf</div>
+        <div class="field-hint">Laut BA-Engpassanalyse</div>
       </div>
-      <div class="field-row">
-        <div class="field-label">Zielgehalt Jahres-Brutto (€)</div>
-        <input type="number" id="targetSalary" value="50000" />
-      </div>
-      <div class="field-row">
+      <span class="engpass-badge engpass-unk" id="engpassBadge">unbekannt</span>
+    </div>
+    <div class="field-row">
+      <div class="field-label">Zielgehalt Jahres-Brutto (€)</div>
+      <input type="number" id="targetSalary" value="50000" oninput="calculate()" />
+    </div>
+    <div class="field-row">
+      <div>
         <div class="field-label">Erwartete Time-to-Hire (Wochen)</div>
-        <input type="number" id="timeToHire" value="8" />
+        <div class="field-hint">Beeinflusst Vakanz- & Schaltkosten</div>
       </div>
-      <div class="field-row">
-        <div class="field-label">Region</div>
-        <select id="region">
-          <option value="Deutschland">Deutschland</option>
-          <option value="Nordrhein-Westfalen">NRW</option>
-          <option value="Bayern">Bayern</option>
-          <option value="Baden-Württemberg">Baden-Württemberg</option>
-          <option value="Hamburg">Hamburg</option>
-          <option value="Berlin">Berlin</option>
-          <option value="Hessen">Hessen</option>
-          <option value="Sachsen">Sachsen</option>
-          <option value="Niedersachsen">Niedersachsen</option>
-        </select>
-      </div>
+      <input type="number" id="timeToHire" value="8" oninput="calculate()" />
     </div>
-
-    <!-- Personalkosten intern -->
-    <div class="card">
-      <div class="card-title">
-        <div class="icon icon-blue">👤</div>
-        Personalkosten Recruiting (intern)
-      </div>
-      <div class="field-row">
-        <div>
-          <div class="field-label">Stundenaufwand Recruiter</div>
-          <div class="field-hint">Screening, Koordination, Gespräche</div>
-        </div>
-        <input type="number" id="recruiterHours" value="20" />
-      </div>
-      <div class="field-row">
-        <div class="field-label">Stundensatz Recruiter inkl. NK (€)</div>
-        <input type="number" id="recruiterRate" value="35" />
-      </div>
-      <div class="field-row">
-        <div>
-          <div class="field-label">Stundenaufwand Fachbereich</div>
-          <div class="field-hint">Interviews, Feedback, Entscheidung</div>
-        </div>
-        <input type="number" id="deptHours" value="8" />
-      </div>
-      <div class="field-row">
-        <div class="field-label">Stundensatz Fachbereich inkl. NK (€)</div>
-        <input type="number" id="deptRate" value="45" />
-      </div>
+    <div class="field-row">
+      <div class="field-label">Standort (zur Dokumentation)</div>
+      <input type="text" id="standort" placeholder="z. B. NRW / Herne" style="width:140px;" />
     </div>
-
-    <!-- Stellenanzeigen -->
-    <div class="card">
-      <div class="card-title">
-        <div class="icon icon-amber">📢</div>
-        Stellenanzeigen / Jobbörsen
-      </div>
-      <div class="field-row">
-        <div>
-          <div class="field-label">Jobbörsen (gesamt)</div>
-          <div class="field-hint">Indeed, StepStone, etc.</div>
-        </div>
-        <input type="number" id="jobBoards" value="800" />
-      </div>
-      <div class="field-row">
-        <div class="field-label">Social Media / LinkedIn</div>
-        <input type="number" id="socialMedia" value="200" />
-      </div>
-      <div class="field-row">
-        <div class="field-label">Sonstige Schaltkosten (€)</div>
-        <input type="number" id="otherAds" value="0" />
-      </div>
-    </div>
-
-    <!-- Headhunter -->
-    <div class="card">
-      <div class="card-title">
-        <div class="icon icon-amber">🏢</div>
-        Personalvermittler / Headhunter
-      </div>
-      <div class="field-row">
-        <div class="field-label">Headhunter eingesetzt?</div>
-        <select id="headhunterUsed">
-          <option value="no">Nein</option>
-          <option value="yes">Ja</option>
-        </select>
-      </div>
-      <div id="hhFields" style="display:none">
-        <div class="field-row">
-          <div class="field-label">Provision (% vom Jahresgehalt)</div>
-          <input type="number" id="headhunterPct" value="25" />
-        </div>
-      </div>
-    </div>
-
-    <!-- Onboarding -->
-    <div class="card">
-      <div class="card-title">
-        <div class="icon icon-green">🚀</div>
-        Onboarding &amp; Einarbeitung
-      </div>
-      <div class="field-row">
-        <div>
-          <div class="field-label">Einarbeitungsdauer (Wochen)</div>
-          <div class="field-hint">Bis zur vollen Produktivität</div>
-        </div>
-        <input type="number" id="onboardingWeeks" value="8" />
-      </div>
-      <div class="field-row">
-        <div>
-          <div class="field-label">Produktivitätsverlust (% p.W.)</div>
-          <div class="field-hint">Geschätzte Minderleistung</div>
-        </div>
-        <input type="number" id="productivityLoss" value="60" />
-      </div>
-      <div class="field-row">
-        <div>
-          <div class="field-label">Materialkosten Onboarding (€)</div>
-          <div class="field-hint">Equipment, Schulungen, Zugänge</div>
-        </div>
-        <input type="number" id="onboardingMaterial" value="500" />
-      </div>
-    </div>
-
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="saveToHistory()">💾 Kalkulation speichern</button>
-      <button class="btn btn-secondary" onclick="loadBAData()">🔄 BA-Daten aktualisieren</button>
-      <button class="btn btn-secondary" onclick="exportCSV()">⬇ CSV Export</button>
-    </div>
-
   </div>
 
-  <!-- ── RIGHT: Ergebnis ── -->
-  <div class="result-panel">
-
-    <!-- Gesamtkosten -->
-    <div class="card">
-      <div class="card-title">
-        <div class="icon icon-green">📊</div>
-        Kostenprognose
+  <!-- Vakanzkosten -->
+  <div class="card">
+    <div class="card-title"><div class="icon icon-warn">⏱</div> Vakanzkosten</div>
+    <div class="field-row">
+      <div>
+        <div class="field-label">Produktivitätsverlust durch Vakanz (%)</div>
+        <div class="field-hint">Welcher Anteil der Stelle fehlt dem Team täglich?</div>
       </div>
-      <div class="metric-big" id="totalDisplay">–</div>
-      <div class="metric-sub" id="pctDisplay">– % des Jahresgehalts</div>
-
-      <div class="split-row">
-        <div class="split-box">
-          <div class="label">Intern</div>
-          <div class="val" id="internalDisplay">–</div>
-        </div>
-        <div class="split-box">
-          <div class="label">Extern</div>
-          <div class="val" id="externalDisplay">–</div>
-        </div>
-        <div class="split-box">
-          <div class="label">Onboarding</div>
-          <div class="val" id="onboardingDisplay">–</div>
-        </div>
-      </div>
-
-      <div class="bar-list" id="barList"></div>
+      <input type="number" id="vakanzProd" value="70" oninput="calculate()" />
     </div>
-
-    <!-- BA-Marktdaten -->
-    <div class="ba-panel">
-      <h3>📡 BA-Marktdaten</h3>
-      <div id="baData">
-        <div class="ba-loading">Konfiguriere Supabase-URL in config.js</div>
+    <div class="field-row">
+      <div>
+        <div class="field-label">Berechnete Vakanzkosten</div>
+        <div class="field-hint">Wochenlohn × Time-to-Hire × Produktivitätsverlust</div>
       </div>
-
-      <!-- Manueller Median-Eintrag -->
-      <div style="margin-top:.75rem; padding-top:.75rem; border-top: 1px dashed #C6DDD0;">
-        <div style="font-size:.72rem; color:var(--accent); font-family:'DM Mono',monospace; margin-bottom:.5rem;">
-          MEDIAN MANUELL EINTRAGEN
-        </div>
-        <div style="font-size:.78rem; color:var(--muted); margin-bottom:.5rem; line-height:1.5;">
-          Beruf im BA Entgeltatlas nachschlagen → Median ablesen → hier eintragen:
-        </div>
-        <a href="https://web.arbeitsagentur.de/entgeltatlas/" target="_blank" style="
-          display: inline-flex; align-items: center; gap: 5px;
-          font-size: .75rem; font-family: 'DM Mono', monospace;
-          color: var(--accent); text-decoration: none;
-          border: 1px solid #C6DDD0; border-radius: 6px;
-          padding: 4px 10px; margin-bottom: .75rem;
-          transition: background .15s;
-        " onmouseover="this.style.background='#D1FAE5'" onmouseout="this.style.background='transparent'">
-          ↗ BA Entgeltatlas öffnen
-        </a>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <div style="flex:1">
-            <div style="font-size:.75rem; color:var(--muted); margin-bottom:3px;">Median Brutto/Monat (€)</div>
-            <input type="number" id="manualMedianMonat" placeholder="z. B. 3450"
-              style="width:100%; text-align:left; font-family:'DM Mono',monospace; font-size:.82rem;"
-              oninput="onManualMedian(this.value)" />
-          </div>
-          <div style="flex:1">
-            <div style="font-size:.75rem; color:var(--muted); margin-bottom:3px;">= Jahreswert</div>
-            <div id="manualJahrDisplay" style="
-              font-family:'DM Mono',monospace; font-size:.82rem;
-              padding: 5px 8px; border: 1px solid var(--border);
-              border-radius: 6px; background: var(--tag-bg);
-              color: var(--muted);
-            ">–</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="benchmark-row" id="benchmarkRow" style="display:none; margin-top:.75rem;">
-        <div class="benchmark-label">Gehalts-Benchmark</div>
-        <span class="benchmark-pill" id="benchmarkPill">–</span>
-      </div>
+      <span id="vakanzDisplay" style="font-family:'DM Mono',monospace; font-size:.85rem; color:var(--accent2);">–</span>
     </div>
-
-    <!-- Verlauf -->
-    <div class="card" style="margin-top:1rem">
-      <div class="card-title">
-        <div class="icon icon-blue">📋</div>
-        Gespeicherte Kalkulationen
-      </div>
-      <div id="historyList">
-        <div class="no-history">Noch keine Kalkulationen gespeichert.</div>
-      </div>
-    </div>
-
   </div>
+
+  <!-- Personalkosten intern -->
+  <div class="card">
+    <div class="card-title"><div class="icon icon-blue">👤</div> Personalkosten Recruiting (intern)</div>
+    <div class="field-row">
+      <div><div class="field-label">Stundenaufwand Recruiter</div><div class="field-hint">Screening, Koordination, Gespräche</div></div>
+      <input type="number" id="recruiterHours" value="20" oninput="calculate()" />
+    </div>
+    <div class="field-row">
+      <div class="field-label">Stundensatz Recruiter inkl. NK (€)</div>
+      <input type="number" id="recruiterRate" value="35" oninput="calculate()" />
+    </div>
+    <div class="field-row">
+      <div><div class="field-label">Stundenaufwand Fachbereich</div><div class="field-hint">Interviews, Feedback, Entscheidung</div></div>
+      <input type="number" id="deptHours" value="8" oninput="calculate()" />
+    </div>
+    <div class="field-row">
+      <div class="field-label">Stundensatz Fachbereich inkl. NK (€)</div>
+      <input type="number" id="deptRate" value="45" oninput="calculate()" />
+    </div>
+  </div>
+
+  <!-- Jobbörsen -->
+  <div class="card">
+    <div class="card-title"><div class="icon icon-amber">📢</div> Stellenanzeigen / Jobbörsen</div>
+    <table class="job-board-table">
+      <thead>
+        <tr>
+          <th>Plattform</th>
+          <th style="text-align:right">€ / Schaltung</th>
+          <th style="text-align:right">Laufzeit (Tage)</th>
+          <th style="text-align:right">Schaltungen</th>
+          <th style="text-align:right">Gesamt</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="jobBoardBody"></tbody>
+    </table>
+    <div class="warn-row" id="warnRow">⚠ Laufzeit kürzer als Time-to-Hire — ggf. erneute Schaltung nötig</div>
+    <button class="add-btn" onclick="addJobBoard()">+ Plattform hinzufügen</button>
+    <div class="field-row" style="margin-top:.75rem">
+      <div><div class="field-label">Social Media / LinkedIn</div></div>
+      <input type="number" id="socialMedia" value="200" oninput="calculate()" />
+    </div>
+    <div class="field-row">
+      <div class="field-label">Sonstige Schaltkosten (€)</div>
+      <input type="number" id="otherAds" value="0" oninput="calculate()" />
+    </div>
+  </div>
+
+  <!-- Headhunter -->
+  <div class="card">
+    <div class="card-title"><div class="icon icon-amber">🏢</div> Personalvermittler / Headhunter</div>
+    <div class="field-row">
+      <div class="field-label">Headhunter eingesetzt?</div>
+      <select id="headhunterUsed" onchange="toggleHH(); calculate()">
+        <option value="no">Nein</option>
+        <option value="yes">Ja</option>
+      </select>
+    </div>
+    <div id="hhFields" style="display:none">
+      <div class="field-row">
+        <div class="field-label">Provision (% vom Jahresgehalt)</div>
+        <input type="number" id="headhunterPct" value="25" oninput="calculate()" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Onboarding -->
+  <div class="card">
+    <div class="card-title"><div class="icon icon-green">🚀</div> Onboarding &amp; Einarbeitung</div>
+    <div class="field-row">
+      <div><div class="field-label">Einarbeitungsdauer (Wochen)</div><div class="field-hint">Bis zur vollen Produktivität</div></div>
+      <input type="number" id="onboardingWeeks" value="8" oninput="calculate()" />
+    </div>
+    <div class="field-row">
+      <div><div class="field-label">Produktivitätsverlust (% p.W.)</div><div class="field-hint">Minderleistung während Einarbeitung</div></div>
+      <input type="number" id="productivityLoss" value="60" oninput="calculate()" />
+    </div>
+    <div class="field-row">
+      <div><div class="field-label">Materialkosten Onboarding (€)</div><div class="field-hint">Equipment, Schulungen, Zugänge</div></div>
+      <input type="number" id="onboardingMaterial" value="500" oninput="calculate()" />
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="saveToHistory()">💾 Kalkulation speichern</button>
+    <button class="btn btn-secondary" onclick="loadBAData()">🔄 BA-Marktdaten</button>
+    <button class="btn btn-secondary" onclick="exportCSV()">⬇ CSV</button>
+  </div>
+
+</div>
+
+<!-- Rechte Spalte -->
+<div class="result-panel">
+
+  <!-- Kostenprognose -->
+  <div class="card">
+    <div class="card-title"><div class="icon icon-green">📊</div> Kostenprognose</div>
+    <div class="metric-big" id="totalDisplay">–</div>
+    <div class="metric-sub" id="pctDisplay">– % des Jahresgehalts</div>
+
+    <div class="split-grid">
+      <div class="split-box"><div class="label">Recruiting intern</div><div class="val" id="internalDisplay">–</div></div>
+      <div class="split-box"><div class="label">Extern / Anzeigen</div><div class="val" id="externalDisplay">–</div></div>
+      <div class="split-box highlight"><div class="label">Vakanzkosten</div><div class="val" id="vakanzSplit">–</div></div>
+      <div class="split-box"><div class="label">Onboarding</div><div class="val" id="onboardingDisplay">–</div></div>
+    </div>
+
+    <div class="bar-list" id="barList"></div>
+  </div>
+
+  <!-- BA-Marktdaten -->
+  <div class="ba-panel">
+    <h3>📡 BA-Marktdaten</h3>
+    <div id="baData"><div class="ba-loading">Konfiguriere Supabase-URL in config.js</div></div>
+
+    <!-- Manueller Median -->
+    <div style="margin-top:.75rem; padding-top:.75rem; border-top:1px dashed #C6DDD0;">
+      <div style="font-size:.7rem; color:var(--accent); font-family:'DM Mono',monospace; margin-bottom:.4rem;">MEDIAN MANUELL (BA ENTGELTATLAS)</div>
+      <div style="font-size:.75rem; color:var(--muted); margin-bottom:.5rem;">
+        Beruf nachschlagen →
+        <a href="https://web.arbeitsagentur.de/entgeltatlas/" target="_blank"
+          style="color:var(--accent); text-decoration:underline;">BA Entgeltatlas öffnen ↗</a>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <div style="flex:1">
+          <div style="font-size:.72rem; color:var(--muted); margin-bottom:3px;">Median Brutto/Monat (€)</div>
+          <input type="number" id="manualMedianMonat" placeholder="z. B. 3450"
+            style="width:100%; text-align:left;" oninput="onManualMedian(this.value)" />
+        </div>
+        <div style="flex:1">
+          <div style="font-size:.72rem; color:var(--muted); margin-bottom:3px;">= Jahreswert</div>
+          <div id="manualJahrDisplay" style="font-family:'DM Mono',monospace; font-size:.82rem; padding:5px 8px; border:1px solid var(--border); border-radius:6px; background:var(--tag-bg); color:var(--muted);">–</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="benchmark-row" id="benchmarkRow" style="display:none">
+      <div class="benchmark-label">Gehalts-Benchmark</div>
+      <span class="benchmark-pill" id="benchmarkPill">–</span>
+    </div>
+  </div>
+
+  <!-- Verlauf -->
+  <div class="card" style="margin-top:1rem">
+    <div class="card-title"><div class="icon icon-blue">📋</div> Gespeicherte Kalkulationen</div>
+    <div id="historyList"><div class="no-history">Noch keine Kalkulationen gespeichert.</div></div>
+  </div>
+
+</div>
 </div>
 
 <footer>
-  Einstellungskosten-Kalkulator · Marktdaten: Statistik der Bundesagentur für Arbeit (Dezember 2025) · Intern entwickelt
+  Einstellungskosten-Kalkulator v2.0 · Engpassdaten: BA Fachkräfteengpassanalyse · Entgeltdaten: <a href="https://web.arbeitsagentur.de/entgeltatlas/" target="_blank" style="color:inherit">BA Entgeltatlas</a> · Intern entwickelt
 </footer>
 
 <script src="config.js"></script>
 <script>
 
-const COLORS = ['#2A4D3C','#C85A2A','#1C3D6E','#7C5C2A','#3D6B5C'];
+// ── Engpassberufe (BA Fachkräfteengpassanalyse 2024) ──────────────────────
+// Quelle: Bundesagentur für Arbeit, Fachkräfteengpassanalyse Dez. 2024
+// true = Engpassberuf (Vakanzzeit deutlich über Durchschnitt)
+const ENGPASS = {
+  "erzieher":                    true,
+  "kinderpfleger":               true,
+  "sozialpädagoge":              true,
+  "pflegefachkraft":             true,
+  "altenpfleger":                true,
+  "gesundheits- und krankenpfleger": true,
+  "arzt":                        true,
+  "zahnarzt":                    true,
+  "physiotherapeut":             true,
+  "fachinformatiker":            true,
+  "softwareentwickler":          true,
+  "it-systemelektroniker":       true,
+  "systemadministrator":         true,
+  "elektroniker":                true,
+  "mechatroniker":               true,
+  "industriemechaniker":         true,
+  "zerspanungsmechaniker":       true,
+  "kfz-mechatroniker":           true,
+  "sanitär- und heizungstechniker": true,
+  "klempner":                    true,
+  "dachdecker":                  true,
+  "maurer":                      true,
+  "zimmerer":                    true,
+  "kraftfahrer":                 true,
+  "berufskraftfahrer":           true,
+  "busfahrer":                   true,
+  "lkw-fahrer":                  true,
+  "grundschullehrer":            true,
+  "sonderpädagoge":              true,
+};
 
-document.getElementById('headhunterUsed').addEventListener('change', toggleHH);
+function checkEngpass(label) {
+  const s = label.toLowerCase();
+  for (const key of Object.keys(ENGPASS)) {
+    if (s.includes(key) || key.includes(s.split(" ")[0].replace("/in",""))) return true;
+  }
+  return false;
+}
+
+// ── Jobbörsen-Tabelle ─────────────────────────────────────────────────────
+let jobBoards = [
+  { name: "StepStone", preis: 600, laufzeit: 60, anzahl: 1 },
+  { name: "Indeed",    preis: 300, laufzeit: 30, anzahl: 1 },
+];
+
+function renderJobBoards() {
+  const tbody = document.getElementById('jobBoardBody');
+  tbody.innerHTML = jobBoards.map((b, i) => `
+    <tr>
+      <td><input type="text" value="${b.name}" oninput="jobBoards[${i}].name=this.value; calculate()" style="width:100%; min-width:90px; text-align:left;" /></td>
+      <td><input type="number" value="${b.preis}" oninput="jobBoards[${i}].preis=+this.value; calculate()" style="width:72px;" /></td>
+      <td><input type="number" value="${b.laufzeit}" oninput="jobBoards[${i}].laufzeit=+this.value; calculate()" style="width:72px;" /></td>
+      <td><input type="number" value="${b.anzahl}" min="1" oninput="jobBoards[${i}].anzahl=+this.value; calculate()" style="width:55px;" /></td>
+      <td style="font-family:'DM Mono',monospace; font-size:.8rem; text-align:right; white-space:nowrap;">${fmt(b.preis * b.anzahl)}</td>
+      <td><button class="del-btn" onclick="removeJobBoard(${i})">×</button></td>
+    </tr>`).join('');
+  checkLaufzeit();
+}
+
+function addJobBoard() {
+  jobBoards.push({ name: "Neu", preis: 0, laufzeit: 30, anzahl: 1 });
+  renderJobBoards();
+  calculate();
+}
+
+function removeJobBoard(i) {
+  jobBoards.splice(i, 1);
+  renderJobBoards();
+  calculate();
+}
+
+function checkLaufzeit() {
+  const tth = g('timeToHire') * 7;
+  const warn = jobBoards.some(b => b.laufzeit * b.anzahl < tth);
+  document.getElementById('warnRow').style.display = warn ? 'block' : 'none';
+}
+
+function jobBoardTotal() {
+  return jobBoards.reduce((sum, b) => sum + b.preis * b.anzahl, 0);
+}
+
+// ── Hilfsfunktionen ───────────────────────────────────────────────────────
+const COLORS = ['#2A4D3C','#C85A2A','#1C3D6E','#7C5C2A','#3D6B5C','#854F0B'];
+function g(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
+function fmt(n) { return new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Math.round(n)); }
+
 function toggleHH() {
   document.getElementById('hhFields').style.display =
     document.getElementById('headhunterUsed').value === 'yes' ? 'block' : 'none';
 }
 
-/* ── Calc ── */
-function g(id) { return parseFloat(document.getElementById(id).value) || 0; }
-function fmt(n) { return new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Math.round(n)); }
-
+// ── Kalkulation ───────────────────────────────────────────────────────────
 let lastCalc = {};
 
 function calculate() {
   const salary    = g('targetSalary');
+  const tth       = g('timeToHire');
   const rCost     = g('recruiterHours') * g('recruiterRate');
   const dCost     = g('deptHours') * g('deptRate');
-  const adsCost   = g('jobBoards') + g('socialMedia') + g('otherAds');
+  const boardCost = jobBoardTotal() + g('socialMedia') + g('otherAds');
   const hhCost    = document.getElementById('headhunterUsed').value === 'yes'
                     ? salary * g('headhunterPct') / 100 : 0;
   const obProd    = (salary / 52) * g('onboardingWeeks') * (g('productivityLoss') / 100);
   const obMat     = g('onboardingMaterial');
 
-  const internal  = rCost + dCost;
-  const external  = adsCost + hhCost;
-  const onboarding= obProd + obMat;
-  const total     = internal + external + onboarding;
+  // Vakanzkosten: Wochenlohn × TTH × Produktivitätsverlust
+  const weeklyGross = salary / 52;
+  const vakanz      = weeklyGross * tth * (g('vakanzProd') / 100);
 
-  lastCalc = { salary, rCost, dCost, adsCost, hhCost, obProd, obMat, internal, external, onboarding, total };
+  const internal   = rCost + dCost;
+  const external   = boardCost + hhCost;
+  const onboarding = obProd + obMat;
+  const total      = internal + external + onboarding + vakanz;
 
-  document.getElementById('totalDisplay').textContent = fmt(total);
-  document.getElementById('pctDisplay').textContent   = salary ? Math.round(total/salary*100) + ' % des Jahresgehalts' : '–';
-  document.getElementById('internalDisplay').textContent   = fmt(internal);
-  document.getElementById('externalDisplay').textContent   = fmt(external);
+  lastCalc = { salary, tth, rCost, dCost, boardCost, hhCost, obProd, obMat, vakanz, internal, external, onboarding, total };
+
+  document.getElementById('totalDisplay').textContent    = fmt(total);
+  document.getElementById('pctDisplay').textContent      = salary ? Math.round(total/salary*100) + ' % des Jahresgehalts' : '–';
+  document.getElementById('internalDisplay').textContent = fmt(internal);
+  document.getElementById('externalDisplay').textContent = fmt(external);
+  document.getElementById('vakanzSplit').textContent     = fmt(vakanz);
   document.getElementById('onboardingDisplay').textContent = fmt(onboarding);
+  document.getElementById('vakanzDisplay').textContent   = fmt(vakanz);
+
+  // Laufzeit-Warnung aktualisieren
+  checkLaufzeit();
 
   const segments = [
+    ['Vakanzkosten',             vakanz],
+    ['Onboarding (Produktivität)',obProd],
+    ['Stellenanzeigen',          boardCost],
+    ['Headhunter',               hhCost],
     ['Recruiter-Zeit',           rCost],
     ['Fachbereich-Zeit',         dCost],
-    ['Stellenanzeigen',          adsCost],
-    ['Headhunter',               hhCost],
-    ['Onboarding (Produktivität)',obProd],
-    ['Onboarding (Material)',    obMat]
-  ].filter(([,v]) => v > 0).sort((a,b) => b[1]-a[1]);
+    ['Onboarding (Material)',    obMat],
+  ].filter(([,v]) => v > 0).sort(([,a],[,b]) => b - a);
 
   const max = Math.max(...segments.map(s => s[1]), 1);
   document.getElementById('barList').innerHTML = segments.map(([label, val], i) => `
     <div class="bar-row">
       <div class="bar-meta"><span>${label}</span><span>${fmt(val)}</span></div>
-      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(val/max*100)}%;background:${COLORS[i%COLORS.length]}"></div></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(val/max*100)}%; background:${COLORS[i%COLORS.length]}"></div></div>
     </div>`).join('');
 
   updateBenchmark(salary);
 }
 
-/* ── BA benchmark ── */
+// ── Benchmark ─────────────────────────────────────────────────────────────
 let baMedian = null;
 
 function updateBenchmark(salary) {
-  const row = document.getElementById('benchmarkRow');
+  const row  = document.getElementById('benchmarkRow');
   const pill = document.getElementById('benchmarkPill');
   if (!baMedian || !salary) { row.style.display = 'none'; return; }
   row.style.display = 'flex';
-  const diff = ((salary - baMedian) / baMedian * 100).toFixed(0);
+  const diff = Math.round((salary - baMedian) / baMedian * 100);
   if (salary < baMedian * 0.9) {
     pill.className = 'benchmark-pill pill-danger';
     pill.textContent = `${diff}% unter Median → Risiko`;
@@ -622,9 +574,16 @@ function updateBenchmark(salary) {
   }
 }
 
-/* ── Autocomplete Berufssuche ── */
+function onManualMedian(val) {
+  const monat = parseFloat(val) || 0;
+  document.getElementById('manualJahrDisplay').textContent = monat ? fmt(monat * 12) : '–';
+  baMedian = monat ? monat * 12 : null;
+  updateBenchmark(g('targetSalary'));
+}
+
+// ── Autocomplete ──────────────────────────────────────────────────────────
 let acTimeout = null;
-let selectedBerufId = null;
+let selectedBerufId    = null;
 let selectedBerufLabel = null;
 
 function onBerufInput(val) {
@@ -635,7 +594,7 @@ function onBerufInput(val) {
 }
 
 async function fetchBerufe(q) {
-  if (!SUPABASE_URL) return;
+  if (typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) return;
   const list = document.getElementById('acList');
   list.style.display = 'block';
   list.innerHTML = '<div class="autocomplete-loading">Suche...</div>';
@@ -648,11 +607,10 @@ async function fetchBerufe(q) {
     if (!berufe.length) { list.innerHTML = '<div class="autocomplete-loading">Keine Treffer</div>'; return; }
     list.innerHTML = berufe.map(b => `
       <div class="autocomplete-item" onclick="selectBeruf('${b.id}','${b.label.replace(/'/g,"\\'")}')">
-        <div class="ac-label">${b.label}</div>
-        <div class="ac-kldb">KldB: ${b.kldb || '–'}</div>
+        ${b.label}
       </div>`).join('');
   } catch(e) {
-    list.innerHTML = '<div class="autocomplete-loading">Fehler bei der Suche</div>';
+    list.innerHTML = '<div class="autocomplete-loading">Verbindungsfehler</div>';
   }
 }
 
@@ -661,88 +619,59 @@ function selectBeruf(id, label) {
   selectedBerufLabel = label;
   document.getElementById('jobTitle').value = label;
   document.getElementById('acList').style.display = 'none';
-  fetchMedian(id);
+
+  // Engpass prüfen
+  const isEngpass = checkEngpass(label);
+  const badge = document.getElementById('engpassBadge');
+  if (isEngpass) {
+    badge.className = 'engpass-badge engpass-ja';
+    badge.textContent = '⚠ Engpassberuf';
+  } else {
+    badge.className = 'engpass-badge engpass-nein';
+    badge.textContent = '✓ kein Engpass';
+  }
 }
 
-document.addEventListener('click', (e) => {
+document.addEventListener('click', e => {
   if (!e.target.closest('.autocomplete-wrap')) {
     document.getElementById('acList').style.display = 'none';
   }
 });
 
-async function fetchMedian(berufId) {
-  const region = document.getElementById('region').value;
-  if (!SUPABASE_URL || !berufId) return;
-  document.getElementById('baData').innerHTML = '<div class="ba-loading">Lade Entgeltdaten...</div>';
-  try {
-    const res  = await fetch(
-      `${SUPABASE_URL}/functions/v1/ba-proxy?action=median&berufId=${berufId}&berufLabel=${encodeURIComponent(selectedBerufLabel??'')}&region=${encodeURIComponent(region)}`,
-      { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
-    );
-    const data = await res.json();
-    baMedian = data.medianJahr ?? null;
-
-    document.getElementById('baDot').className = 'ba-dot';
-    document.getElementById('baStatus').textContent = 'BA Entgeltatlas · aktuell';
-    document.getElementById('baData').innerHTML = `
-      <div class="ba-row"><span class="k">Beruf</span><span class="v">${selectedBerufLabel ?? '–'}</span></div>
-      <div class="ba-row"><span class="k">Region</span><span class="v">${data.region}</span></div>
-      <div class="ba-row"><span class="k">Median Brutto/Monat</span><span class="v">${data.medianMonat ? fmt(data.medianMonat) : '–'}</span></div>
-      <div class="ba-row"><span class="k">Median Brutto/Jahr</span><span class="v">${data.medianJahr ? fmt(data.medianJahr) : '–'}</span></div>
-      <div class="ba-row"><span class="k">Quelle</span><span class="v">${data.quelle ?? 'BA Entgeltatlas'}</span></div>`;
-    updateBenchmark(g('targetSalary'));
-  } catch(e) {
-    document.getElementById('baData').innerHTML = `<div class="ba-error">Fehler: ${e.message}</div>`;
-  }
-}
-
-/* ── Manueller Median ── */
-function onManualMedian(val) {
-  const monat = parseFloat(val) || 0;
-  const jahr  = monat * 12;
-  document.getElementById('manualJahrDisplay').textContent = monat ? fmt(jahr) : '–';
-  baMedian = monat ? jahr : null;
-  updateBenchmark(g('targetSalary'));
-}
-
-/* ── BA Marktdaten ── */
+// ── BA Marktdaten ─────────────────────────────────────────────────────────
 async function loadBAData() {
-  const region = document.getElementById('region').value;
   document.getElementById('baData').innerHTML = '<div class="ba-loading">Lade Marktdaten...</div>';
   if (typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) {
-    document.getElementById('baData').innerHTML = `<div class="ba-error">config.js: SUPABASE_URL nicht gesetzt.</div>`;
+    document.getElementById('baData').innerHTML = '<div class="ba-error">SUPABASE_URL nicht gesetzt.</div>';
     return;
   }
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/functions/v1/ba-proxy?action=markt&region=${encodeURIComponent(region)}`,
-      { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
-    );
+    const res  = await fetch(`${SUPABASE_URL}/functions/v1/ba-proxy?action=markt&region=Deutschland`, {
+      headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     document.getElementById('baDot').className = 'ba-dot';
-    document.getElementById('baStatus').textContent = `BA-Marktdaten: ${data.stand || 'aktuell'}`;
+    document.getElementById('baStatus').textContent = `BA-Marktdaten · ${data.stand || 'aktuell'}`;
     document.getElementById('baData').innerHTML = `
-      <div class="ba-row"><span class="k">Region</span><span class="v">${data.region}</span></div>
-      <div class="ba-row"><span class="k">Gemeldete Stellen</span><span class="v">${data.gemeldeteStellenGesamt?.toLocaleString('de-DE') ?? '–'}</span></div>
+      <div class="ba-row"><span class="k">Gemeldete Stellen (DE)</span><span class="v">${data.gemeldeteStellenGesamt?.toLocaleString('de-DE') ?? '–'}</span></div>
       <div class="ba-row"><span class="k">Stand</span><span class="v">${data.stand ?? '–'}</span></div>
-      <div class="ba-loading" style="margin-top:6px">Beruf eingeben für Gehalts-Benchmark ↑</div>`;
+      <div class="ba-row"><span class="k">Median → bitte manuell eintragen</span><span class="v">↓</span></div>`;
   } catch(e) {
     document.getElementById('baDot').className = 'ba-dot offline';
-    document.getElementById('baStatus').textContent = 'BA-Daten: Verbindungsfehler';
-    document.getElementById('baData').innerHTML = `<div class="ba-error">Fehler: ${e.message}</div>`;
+    document.getElementById('baStatus').textContent = 'Verbindungsfehler';
+    document.getElementById('baData').innerHTML = `<div class="ba-error">${e.message}</div>`;
   }
 }
 
-/* ── History (localStorage) ── */
+// ── History ───────────────────────────────────────────────────────────────
 function saveToHistory() {
-  const title = document.getElementById('jobTitle').value || 'Unbenannte Stelle';
+  const title   = document.getElementById('jobTitle').value || 'Unbenannte Stelle';
+  const standort= document.getElementById('standort').value || '';
   const entries = JSON.parse(localStorage.getItem('ek_history') || '[]');
   entries.unshift({
-    title, total: lastCalc.total,
-    salary: lastCalc.salary,
+    title, standort, total: lastCalc.total, salary: lastCalc.salary,
     date: new Date().toLocaleDateString('de-DE'),
-    data: { ...lastCalc }
   });
   localStorage.setItem('ek_history', JSON.stringify(entries.slice(0, 20)));
   renderHistory();
@@ -753,52 +682,43 @@ function renderHistory() {
   const el = document.getElementById('historyList');
   if (!entries.length) { el.innerHTML = '<div class="no-history">Noch keine Kalkulationen gespeichert.</div>'; return; }
   el.innerHTML = entries.map((e, i) => `
-    <div class="history-item" onclick="loadHistory(${i})">
-      <div><div class="h-title">${e.title}</div><div style="font-size:.7rem">${e.date}</div></div>
+    <div class="history-item">
+      <div>
+        <div class="h-title">${e.title}${e.standort ? ' · ' + e.standort : ''}</div>
+        <div style="font-size:.7rem">${e.date}</div>
+      </div>
       <div class="h-cost">${fmt(e.total)}</div>
     </div>`).join('');
 }
 
-function loadHistory(i) {
-  const entries = JSON.parse(localStorage.getItem('ek_history') || '[]');
-  const e = entries[i];
-  if (!e) return;
-  document.getElementById('jobTitle').value = e.title;
-  document.getElementById('targetSalary').value = e.salary;
-  calculate();
-}
-
-/* ── CSV Export ── */
+// ── CSV Export ────────────────────────────────────────────────────────────
 function exportCSV() {
-  const c = lastCalc;
+  const c     = lastCalc;
   const title = document.getElementById('jobTitle').value || 'Stelle';
-  const rows = [
+  const rows  = [
     ['Kategorie','Betrag (EUR)'],
+    ['Vakanzkosten', Math.round(c.vakanz)],
     ['Recruiter-Zeit', Math.round(c.rCost)],
     ['Fachbereich-Zeit', Math.round(c.dCost)],
-    ['Stellenanzeigen', Math.round(c.adsCost)],
+    ['Stellenanzeigen & Social', Math.round(c.boardCost)],
     ['Headhunter', Math.round(c.hhCost)],
     ['Onboarding Produktivitätsverlust', Math.round(c.obProd)],
     ['Onboarding Material', Math.round(c.obMat)],
     ['GESAMT', Math.round(c.total)],
     ['Zielgehalt', Math.round(c.salary)],
-    ['Anteil am Jahresgehalt %', c.salary ? Math.round(c.total/c.salary*100) : 0]
+    ['Time-to-Hire (Wochen)', c.tth],
+    ['Anteil am Jahresgehalt %', c.salary ? Math.round(c.total/c.salary*100) : 0],
   ];
-  const csv = rows.map(r => r.join(';')).join('\n');
+  const csv  = rows.map(r => r.join(';')).join('\n');
   const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
   a.download = `einstellungskosten_${title.replace(/\s+/g,'_')}.csv`;
   a.click();
 }
 
-/* ── Live updates ── */
-document.querySelectorAll('input, select').forEach(el => {
-  el.addEventListener('input', calculate);
-  el.addEventListener('change', calculate);
-});
-
-/* ── Init ── */
+// ── Init ──────────────────────────────────────────────────────────────────
+renderJobBoards();
 renderHistory();
 calculate();
 </script>
