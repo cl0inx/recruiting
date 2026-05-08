@@ -135,27 +135,7 @@
     select { width: 140px; text-align: left; cursor: pointer; }
     input:focus, select:focus { border-color: var(--accent); }
 
-    /* ── Preset bar ── */
-    .preset-bar {
-      display: flex; gap: 6px; flex-wrap: wrap;
-      margin-bottom: 1rem;
-    }
-    .preset-btn {
-      font-family: 'DM Mono', monospace;
-      font-size: .7rem;
-      padding: 4px 10px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: var(--surface);
-      color: var(--muted);
-      cursor: pointer;
-      transition: all .15s;
-    }
-    .preset-btn:hover, .preset-btn.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
+
 
     /* ── Result panel ── */
     .result-panel { position: sticky; top: 1.5rem; }
@@ -321,13 +301,7 @@
         <div class="icon icon-blue">💼</div>
         Stellenprofil
       </div>
-      <div class="preset-bar" id="presetBar">
-        <button class="preset-btn" data-preset="office">Büro / Verwaltung</button>
-        <button class="preset-btn" data-preset="tech">IT / Technik</button>
-        <button class="preset-btn" data-preset="exec">Führungskraft</button>
-        <button class="preset-btn" data-preset="specialist">Fachkraft</button>
-        <button class="preset-btn" data-preset="production">Produktion</button>
-      </div>
+
       <div class="field-row">
         <div class="field-label">Berufsbezeichnung (BA-Suche)</div>
         <div class="autocomplete-wrap">
@@ -533,30 +507,7 @@
 <script src="config.js"></script>
 <script>
 
-/* ── Presets ── */
-const PRESETS = {
-  office:     { recruiterHours:16, recruiterRate:32, deptHours:6,  deptRate:38, jobBoards:500,  socialMedia:100, headhunterUsed:'no', onboardingWeeks:6,  productivityLoss:50, onboardingMaterial:300 },
-  tech:       { recruiterHours:24, recruiterRate:38, deptHours:12, deptRate:55, jobBoards:900,  socialMedia:400, headhunterUsed:'no', onboardingWeeks:12, productivityLoss:65, onboardingMaterial:1200 },
-  exec:       { recruiterHours:30, recruiterRate:45, deptHours:15, deptRate:80, jobBoards:1200, socialMedia:600, headhunterUsed:'yes', onboardingWeeks:16, productivityLoss:70, onboardingMaterial:800 },
-  specialist: { recruiterHours:22, recruiterRate:36, deptHours:10, deptRate:50, jobBoards:800,  socialMedia:300, headhunterUsed:'no', onboardingWeeks:10, productivityLoss:60, onboardingMaterial:600 },
-  production: { recruiterHours:14, recruiterRate:30, deptHours:5,  deptRate:35, jobBoards:400,  socialMedia:80,  headhunterUsed:'no', onboardingWeeks:5,  productivityLoss:45, onboardingMaterial:200 }
-};
-
 const COLORS = ['#2A4D3C','#C85A2A','#1C3D6E','#7C5C2A','#3D6B5C'];
-
-document.querySelectorAll('.preset-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const p = PRESETS[btn.dataset.preset];
-    Object.entries(p).forEach(([k,v]) => {
-      const el = document.getElementById(k);
-      if (el) { el.tagName === 'SELECT' ? (el.value = v) : (el.value = v); }
-    });
-    toggleHH();
-    calculate();
-  });
-});
 
 document.getElementById('headhunterUsed').addEventListener('change', toggleHH);
 function toggleHH() {
@@ -651,7 +602,7 @@ async function fetchBerufe(q) {
   list.style.display = 'block';
   list.innerHTML = '<div class="autocomplete-loading">Suche...</div>';
   try {
-    const res  = await fetch(`${SUPABASE_URL}/functions/v1/hyper-processor?action=berufe&q=${encodeURIComponent(q)}`, {
+    const res  = await fetch(`${SUPABASE_URL}/functions/v1/ba-proxy?action=berufe&q=${encodeURIComponent(q)}`, {
       headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
     });
     const data = await res.json();
@@ -687,7 +638,7 @@ async function fetchMedian(berufId) {
   document.getElementById('baData').innerHTML = '<div class="ba-loading">Lade Entgeltdaten...</div>';
   try {
     const res  = await fetch(
-      `${SUPABASE_URL}/functions/v1/hyper-processor?action=median&berufId=${berufId}&region=${encodeURIComponent(region)}`,
+      `${SUPABASE_URL}/functions/v1/ba-proxy?action=median&berufId=${berufId}&region=${encodeURIComponent(region)}`,
       { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
     );
     const data = await res.json();
@@ -717,7 +668,7 @@ async function loadBAData() {
   }
   try {
     const res = await fetch(
-      `${SUPABASE_URL}/functions/v1/hyper-processor?action=markt&region=${encodeURIComponent(region)}`,
+      `${SUPABASE_URL}/functions/v1/ba-proxy?action=markt&region=${encodeURIComponent(region)}`,
       { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
     );
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
