@@ -259,6 +259,35 @@
     .btn-secondary:hover { background: var(--border); }
     .btn-row { display: flex; gap: 8px; margin-top: .75rem; flex-wrap: wrap; }
 
+    /* ── Autocomplete ── */
+    .autocomplete-wrap { position: relative; }
+    .autocomplete-input { width: 100%; }
+    .autocomplete-list {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 4px);
+      width: 320px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 16px rgba(0,0,0,.1);
+      z-index: 100;
+      overflow: hidden;
+    }
+    .autocomplete-item {
+      padding: 8px 12px;
+      font-size: .82rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--tag-bg);
+      color: var(--text);
+      transition: background .1s;
+    }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover { background: var(--tag-bg); }
+    .autocomplete-item .ac-label { font-weight: 500; }
+    .autocomplete-item .ac-kldb { font-size: .7rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+    .autocomplete-loading { padding: 8px 12px; font-size: .8rem; color: var(--muted); font-style: italic; }
+
     footer {
       text-align: center;
       padding: 2rem;
@@ -300,8 +329,11 @@
         <button class="preset-btn" data-preset="production">Produktion</button>
       </div>
       <div class="field-row">
-        <div class="field-label">Stellenbezeichnung</div>
-        <input type="text" id="jobTitle" placeholder="z. B. IT-Fachkraft" />
+        <div class="field-label">Berufsbezeichnung (BA-Suche)</div>
+        <div class="autocomplete-wrap">
+          <input type="text" id="jobTitle" class="autocomplete-input" placeholder="z. B. Buchhalter" autocomplete="off" oninput="onBerufInput(this.value)" />
+          <div class="autocomplete-list" id="acList" style="display:none"></div>
+        </div>
       </div>
       <div class="field-row">
         <div class="field-label">Zielgehalt Jahres-Brutto (€)</div>
@@ -601,39 +633,103 @@ function updateBenchmark(salary) {
   }
 }
 
-/* ── BA API via Supabase Proxy ── */
-async function loadBAData() {
-  const region = document.getElementById('region').value;
-  document.getElementById('baData').innerHTML = '<div class="ba-loading">Lade BA-Daten...</div>';
+/* ── Autocomplete Berufssuche ── */
+let acTimeout = null;
+let selectedBerufId = null;
+let selectedBerufLabel = null;
 
-  if (typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) {
-    document.getElementById('baData').innerHTML = `
-      <div class="ba-error">config.js: SUPABASE_URL nicht gesetzt.<br>Siehe README.md.</div>`;
-    return;
-  }
+function onBerufInput(val) {
+  selectedBerufId = null;
+  clearTimeout(acTimeout);
+  if (val.length < 2) { document.getElementById('acList').style.display = 'none'; return; }
+  acTimeout = setTimeout(() => fetchBerufe(val), 350);
+}
 
+async function fetchBerufe(q) {
+  if (!SUPABASE_URL) return;
+  const list = document.getElementById('acList');
+  list.style.display = 'block';
+  list.innerHTML = '<div class="autocomplete-loading">Suche...</div>';
   try {
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/ba-proxy?region=${encodeURIComponent(region)}`, {
+    const res  = await fetch(`${SUPABASE_URL}/functions/v1/hyper-processor?action=berufe&q=${encodeURIComponent(q)}`, {
       headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
+    const berufe = data.berufe ?? [];
+    if (!berufe.length) { list.innerHTML = '<div class="autocomplete-loading">Keine Treffer</div>'; return; }
+    list.innerHTML = berufe.map(b => `
+      <div class="autocomplete-item" onclick="selectBeruf('${b.id}','${b.label.replace(/'/g,"\\'")}')">
+        <div class="ac-label">${b.label}</div>
+        <div class="ac-kldb">KldB: ${b.kldb || '–'}</div>
+      </div>`).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="autocomplete-loading">Fehler bei der Suche</div>';
+  }
+}
+
+function selectBeruf(id, label) {
+  selectedBerufId    = id;
+  selectedBerufLabel = label;
+  document.getElementById('jobTitle').value = label;
+  document.getElementById('acList').style.display = 'none';
+  fetchMedian(id);
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.autocomplete-wrap')) {
+    document.getElementById('acList').style.display = 'none';
+  }
+});
+
+async function fetchMedian(berufId) {
+  const region = document.getElementById('region').value;
+  if (!SUPABASE_URL || !berufId) return;
+  document.getElementById('baData').innerHTML = '<div class="ba-loading">Lade Entgeltdaten...</div>';
+  try {
+    const res  = await fetch(
+      `${SUPABASE_URL}/functions/v1/hyper-processor?action=median&berufId=${berufId}&region=${encodeURIComponent(region)}`,
+      { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+    );
+    const data = await res.json();
+    baMedian = data.medianJahr ?? null;
 
     document.getElementById('baDot').className = 'ba-dot';
-    document.getElementById('baStatus').textContent = `BA-Daten: ${data.stand || 'aktuell'}`;
-
-    baMedian = data.medianEntgelt || null;
-
+    document.getElementById('baStatus').textContent = 'BA Entgeltatlas · aktuell';
     document.getElementById('baData').innerHTML = `
-      <div class="ba-row"><span class="k">Region</span><span class="v">${data.region || region}</span></div>
-      <div class="ba-row"><span class="k">Gemeldete Stellen</span><span class="v">${data.gemeldeteStellenGesamt?.toLocaleString('de-DE') ?? '–'}</span></div>
-      <div class="ba-row"><span class="k">Veränderung ggü. Vorjahr</span><span class="v">${data.stellenVeraenderung ?? '–'}</span></div>
-      <div class="ba-row"><span class="k">Median Bruttoentgelt/Mo</span><span class="v">${data.medianEntgelt ? fmt(data.medianEntgelt/12) : '–'}</span></div>
-      <div class="ba-row"><span class="k">Stand</span><span class="v">${data.stand ?? '–'}</span></div>`;
-
+      <div class="ba-row"><span class="k">Beruf</span><span class="v">${selectedBerufLabel ?? '–'}</span></div>
+      <div class="ba-row"><span class="k">Region</span><span class="v">${data.region}</span></div>
+      <div class="ba-row"><span class="k">Median Brutto/Monat</span><span class="v">${data.medianMonat ? fmt(data.medianMonat) : '–'}</span></div>
+      <div class="ba-row"><span class="k">Median Brutto/Jahr</span><span class="v">${data.medianJahr ? fmt(data.medianJahr) : '–'}</span></div>
+      <div class="ba-row"><span class="k">Quelle</span><span class="v">${data.quelle ?? 'BA Entgeltatlas'}</span></div>`;
     updateBenchmark(g('targetSalary'));
+  } catch(e) {
+    document.getElementById('baData').innerHTML = `<div class="ba-error">Fehler: ${e.message}</div>`;
+  }
+}
 
-  } catch (e) {
+/* ── BA Marktdaten ── */
+async function loadBAData() {
+  const region = document.getElementById('region').value;
+  document.getElementById('baData').innerHTML = '<div class="ba-loading">Lade Marktdaten...</div>';
+  if (typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) {
+    document.getElementById('baData').innerHTML = `<div class="ba-error">config.js: SUPABASE_URL nicht gesetzt.</div>`;
+    return;
+  }
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/functions/v1/hyper-processor?action=markt&region=${encodeURIComponent(region)}`,
+      { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+    );
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    document.getElementById('baDot').className = 'ba-dot';
+    document.getElementById('baStatus').textContent = `BA-Marktdaten: ${data.stand || 'aktuell'}`;
+    document.getElementById('baData').innerHTML = `
+      <div class="ba-row"><span class="k">Region</span><span class="v">${data.region}</span></div>
+      <div class="ba-row"><span class="k">Gemeldete Stellen</span><span class="v">${data.gemeldeteStellenGesamt?.toLocaleString('de-DE') ?? '–'}</span></div>
+      <div class="ba-row"><span class="k">Stand</span><span class="v">${data.stand ?? '–'}</span></div>
+      <div class="ba-loading" style="margin-top:6px">Beruf eingeben für Gehalts-Benchmark ↑</div>`;
+  } catch(e) {
     document.getElementById('baDot').className = 'ba-dot offline';
     document.getElementById('baStatus').textContent = 'BA-Daten: Verbindungsfehler';
     document.getElementById('baData').innerHTML = `<div class="ba-error">Fehler: ${e.message}</div>`;
