@@ -196,17 +196,18 @@
     <div class="field-row">
       <div class="field-label">Berufsbezeichnung (BA-Suche)</div>
       <div class="autocomplete-wrap">
-        <input type="text" id="jobTitle" class="autocomplete-input" placeholder="z. B. Buchhalter" autocomplete="off" oninput="onBerufInput(this.value)" style="width:160px; text-align:left;" />
+        <input type="text" id="jobTitle" class="autocomplete-input" placeholder="z. B. Buchhalter" autocomplete="off" oninput="onBerufInput(this.value)" style="width:220px; text-align:left;" />
         <div class="autocomplete-list" id="acList" style="display:none"></div>
       </div>
     </div>
     <div class="field-row">
       <div>
         <div class="field-label">Engpassberuf</div>
-        <div class="field-hint">Laut BA-Engpassanalyse</div>
+        <div class="field-hint">Laut BA-Engpassanalyse — klicken für Details</div>
       </div>
-      <span class="engpass-badge engpass-unk" id="engpassBadge">unbekannt</span>
+      <span class="engpass-badge engpass-unk" id="engpassBadge">wähle Beruf</span>
     </div>
+    <div id="engpassDetail" style="display:none; margin-top:8px; background:#F0F7F3; border:1px solid #C6DDD0; border-radius:8px; padding:10px 12px;"></div>
     <div class="field-row">
       <div class="field-label">Zielgehalt Jahres-Brutto (€)</div>
       <input type="number" id="targetSalary" value="50000" oninput="calculate()" />
@@ -402,48 +403,7 @@
 <script src="config.js"></script>
 <script>
 
-// ── Engpassberufe (BA Fachkräfteengpassanalyse 2024) ──────────────────────
-// Quelle: Bundesagentur für Arbeit, Fachkräfteengpassanalyse Dez. 2024
-// true = Engpassberuf (Vakanzzeit deutlich über Durchschnitt)
-const ENGPASS = {
-  "erzieher":                    true,
-  "kinderpfleger":               true,
-  "sozialpädagoge":              true,
-  "pflegefachkraft":             true,
-  "altenpfleger":                true,
-  "gesundheits- und krankenpfleger": true,
-  "arzt":                        true,
-  "zahnarzt":                    true,
-  "physiotherapeut":             true,
-  "fachinformatiker":            true,
-  "softwareentwickler":          true,
-  "it-systemelektroniker":       true,
-  "systemadministrator":         true,
-  "elektroniker":                true,
-  "mechatroniker":               true,
-  "industriemechaniker":         true,
-  "zerspanungsmechaniker":       true,
-  "kfz-mechatroniker":           true,
-  "sanitär- und heizungstechniker": true,
-  "klempner":                    true,
-  "dachdecker":                  true,
-  "maurer":                      true,
-  "zimmerer":                    true,
-  "kraftfahrer":                 true,
-  "berufskraftfahrer":           true,
-  "busfahrer":                   true,
-  "lkw-fahrer":                  true,
-  "grundschullehrer":            true,
-  "sonderpädagoge":              true,
-};
 
-function checkEngpass(label) {
-  const s = label.toLowerCase();
-  for (const key of Object.keys(ENGPASS)) {
-    if (s.includes(key) || key.includes(s.split(" ")[0].replace("/in",""))) return true;
-  }
-  return false;
-}
 
 // ── Jobbörsen-Tabelle ─────────────────────────────────────────────────────
 let jobBoards = [
@@ -620,15 +580,69 @@ function selectBeruf(id, label) {
   document.getElementById('jobTitle').value = label;
   document.getElementById('acList').style.display = 'none';
 
-  // Engpass prüfen
-  const isEngpass = checkEngpass(label);
+  // Badge auf "prüfe..." setzen
   const badge = document.getElementById('engpassBadge');
-  if (isEngpass) {
-    badge.className = 'engpass-badge engpass-ja';
-    badge.textContent = '⚠ Engpassberuf';
-  } else {
-    badge.className = 'engpass-badge engpass-nein';
-    badge.textContent = '✓ kein Engpass';
+  badge.className = 'engpass-badge engpass-unk';
+  badge.textContent = '… prüfe';
+
+  // Engpass aus Datenbank laden
+  fetchEngpass(label);
+}
+
+async function fetchEngpass(label) {
+  if (typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) return;
+  const badge  = document.getElementById('engpassBadge');
+  const detail = document.getElementById('engpassDetail');
+  try {
+    const res  = await fetch(
+      `${SUPABASE_URL}/functions/v1/ba-proxy?action=engpass&berufLabel=${encodeURIComponent(label)}`,
+      { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+    );
+    const data = await res.json();
+
+    if (!data.treffer) {
+      badge.className   = 'engpass-badge engpass-unk';
+      badge.textContent = '? nicht gefunden';
+      detail.style.display = 'none';
+      return;
+    }
+
+    // Badge
+    if (data.engpass) {
+      badge.className   = 'engpass-badge engpass-ja';
+      badge.textContent = `⚠ Engpassberuf · ${data.gesamtbewertung}`;
+    } else {
+      badge.className   = 'engpass-badge engpass-nein';
+      badge.textContent = `✓ kein Engpass · ${data.gesamtbewertung}`;
+    }
+    badge.style.cursor = 'pointer';
+    badge.onclick = () => detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
+
+    // Bewertungsfarben
+    const scoreColor = v => v === '3' ? '#991B1B' : v === '2' ? '#856404' : v === '1' ? '#065F46' : '#6B7280';
+    const scoreText  = { '3': 'erhöht', '2': 'leicht erhöht', '1': 'unauffällig', '0': 'kein Hinweis', 'X': 'k.A.' };
+
+    // Detailkarte
+    detail.style.display = 'block';
+    detail.innerHTML = `
+      <div style="font-size:.72rem; color:var(--muted); margin-bottom:6px; display:flex; justify-content:space-between;">
+        <span>Treffer: <strong>${data.treffer}</strong> (KldB ${data.kennziffer})</span>
+        <span>Übereinstimmung: ${data.score}%</span>
+      </div>
+      <div style="font-size:.72rem; color:var(--muted); margin-bottom:8px;">Stand: BA Engpassanalyse ${data.stand} · <a href="https://statistik.arbeitsagentur.de/DE/Navigation/Statistiken/Themen-im-Fokus/Fachkraefte/Fachkraefte-Nav.html" target="_blank" style="color:var(--accent)">Quelle ↗</a></div>
+      ${data.kriterien.map(k => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #C6DDD0; font-size:.78rem;">
+          <span style="color:var(--muted)">${k.label}</span>
+          <span style="font-family:'DM Mono',monospace; font-weight:500; color:${scoreColor(k.wert)}">${scoreText[k.wert] ?? k.wert}</span>
+        </div>`).join('')}
+      ${data.alternativen?.length ? `
+        <div style="margin-top:8px; font-size:.7rem; color:var(--muted);">
+          Weitere mögliche Treffer: ${data.alternativen.map(a => `${a.beruf} (${a.score}%)`).join(' · ')}
+        </div>` : ''}`;
+  } catch(e) {
+    badge.className   = 'engpass-badge engpass-unk';
+    badge.textContent = '? Fehler';
+    console.error('Engpass-Fehler:', e);
   }
 }
 
