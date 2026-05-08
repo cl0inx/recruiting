@@ -638,7 +638,7 @@ async function fetchMedian(berufId) {
   document.getElementById('baData').innerHTML = '<div class="ba-loading">Lade Entgeltdaten...</div>';
   try {
     const res  = await fetch(
-      `${SUPABASE_URL}/functions/v1/ba-proxy?action=median&berufId=${berufId}&region=${encodeURIComponent(region)}`,
+      `${SUPABASE_URL}/functions/v1/ba-proxy?action=median&berufId=${berufId}&berufLabel=${encodeURIComponent(selectedBerufLabel??'')}&region=${encodeURIComponent(region)}`,
       { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
     );
     const data = await res.json();
