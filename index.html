@@ -480,7 +480,45 @@
       <div id="baData">
         <div class="ba-loading">Konfiguriere Supabase-URL in config.js</div>
       </div>
-      <div class="benchmark-row" id="benchmarkRow" style="display:none">
+
+      <!-- Manueller Median-Eintrag -->
+      <div style="margin-top:.75rem; padding-top:.75rem; border-top: 1px dashed #C6DDD0;">
+        <div style="font-size:.72rem; color:var(--accent); font-family:'DM Mono',monospace; margin-bottom:.5rem;">
+          MEDIAN MANUELL EINTRAGEN
+        </div>
+        <div style="font-size:.78rem; color:var(--muted); margin-bottom:.5rem; line-height:1.5;">
+          Beruf im BA Entgeltatlas nachschlagen → Median ablesen → hier eintragen:
+        </div>
+        <a href="https://web.arbeitsagentur.de/entgeltatlas/" target="_blank" style="
+          display: inline-flex; align-items: center; gap: 5px;
+          font-size: .75rem; font-family: 'DM Mono', monospace;
+          color: var(--accent); text-decoration: none;
+          border: 1px solid #C6DDD0; border-radius: 6px;
+          padding: 4px 10px; margin-bottom: .75rem;
+          transition: background .15s;
+        " onmouseover="this.style.background='#D1FAE5'" onmouseout="this.style.background='transparent'">
+          ↗ BA Entgeltatlas öffnen
+        </a>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <div style="flex:1">
+            <div style="font-size:.75rem; color:var(--muted); margin-bottom:3px;">Median Brutto/Monat (€)</div>
+            <input type="number" id="manualMedianMonat" placeholder="z. B. 3450"
+              style="width:100%; text-align:left; font-family:'DM Mono',monospace; font-size:.82rem;"
+              oninput="onManualMedian(this.value)" />
+          </div>
+          <div style="flex:1">
+            <div style="font-size:.75rem; color:var(--muted); margin-bottom:3px;">= Jahreswert</div>
+            <div id="manualJahrDisplay" style="
+              font-family:'DM Mono',monospace; font-size:.82rem;
+              padding: 5px 8px; border: 1px solid var(--border);
+              border-radius: 6px; background: var(--tag-bg);
+              color: var(--muted);
+            ">–</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="benchmark-row" id="benchmarkRow" style="display:none; margin-top:.75rem;">
         <div class="benchmark-label">Gehalts-Benchmark</div>
         <span class="benchmark-pill" id="benchmarkPill">–</span>
       </div>
@@ -656,6 +694,15 @@ async function fetchMedian(berufId) {
   } catch(e) {
     document.getElementById('baData').innerHTML = `<div class="ba-error">Fehler: ${e.message}</div>`;
   }
+}
+
+/* ── Manueller Median ── */
+function onManualMedian(val) {
+  const monat = parseFloat(val) || 0;
+  const jahr  = monat * 12;
+  document.getElementById('manualJahrDisplay').textContent = monat ? fmt(jahr) : '–';
+  baMedian = monat ? jahr : null;
+  updateBenchmark(g('targetSalary'));
 }
 
 /* ── BA Marktdaten ── */
