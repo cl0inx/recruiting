@@ -330,7 +330,6 @@
 
   <div class="btn-row">
     <button class="btn btn-primary" onclick="saveToHistory()">💾 Kalkulation speichern</button>
-    <button class="btn btn-secondary" onclick="loadBAData()">🔄 BA-Marktdaten</button>
     <button class="btn btn-secondary" onclick="exportCSV()">⬇ CSV</button>
   </div>
 
@@ -618,27 +617,93 @@ async function fetchEngpass(label) {
     badge.style.cursor = 'pointer';
     badge.onclick = () => detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
 
-    // Bewertungsfarben
+    // Bewertungsfarben & Texte
     const scoreColor = v => v === '3' ? '#991B1B' : v === '2' ? '#856404' : v === '1' ? '#065F46' : '#6B7280';
     const scoreText  = { '3': 'erhöht', '2': 'leicht erhöht', '1': 'unauffällig', '0': 'kein Hinweis', 'X': 'k.A.' };
+
+    // Eingabewerte für kombinierte Empfehlung
+    const asRelation  = data.kriterien?.find(k => k.label.includes('Stellen-Relation'))?.wert ?? 'X';
+    const salary      = parseFloat(document.getElementById('targetSalary')?.value) || 0;
+    const vakanz      = lastCalc.vakanz || 0;
+    const gesamtOhnePDL = lastCalc.total || 0;
+    const unterMedian = baMedian && salary ? salary < baMedian * 0.9 : false;
+    const starkEngpass = parseFloat(data.gesamtbewertung) >= 2.5;
+    const pdlSinnvoll  = asRelation === '3' && (vakanz > 15000 || gesamtOhnePDL > 25000);
+
+    // Kanäle bestimmen
+    const kanaele = ['Jobbörsen (Basis)']; // immer
+    if (asRelation === '3' || asRelation === '2') kanaele.push('Instagram / Social Media Recruiting');
+    if (pdlSinnvoll) kanaele.push('PDL / Headhunter (wirtschaftlich prüfen)');
+
+    // Hinweise je nach Situation
+    const hinweise = [];
+
+    if (asRelation === '3') {
+      hinweise.push('Wenige Bewerber auf dem Markt — früh starten, Prozess beschleunigen');
+      hinweise.push('Reaktionszeit auf Bewerbungen unter 48h anstreben');
+    }
+    if (asRelation === '2') {
+      hinweise.push('Leichter Bewerbermangel — Stellenanzeige klar differenzieren');
+    }
+    if (unterMedian) {
+      hinweise.push('Gehalt liegt unter Marktmedian — Benefits und Zusatzleistungen in der Anzeige prominent hervorheben');
+      hinweise.push('Längere Time-to-Hire einplanen');
+    }
+    if (starkEngpass && unterMedian) {
+      hinweise.push('Kombination aus Engpass und Gehalts-Nachteil: Instagram-Recruiting für passive Kandidaten priorisieren');
+    }
+    if (pdlSinnvoll) {
+      hinweise.push(`Vakanzkosten (${fmt(vakanz)}) rechtfertigen PDL wirtschaftlich — Voraussetzung: Bereitschaft des Fachbereichs`);
+    }
+    if (asRelation === '1' || asRelation === '0') {
+      hinweise.push('Ausgewogener Markt — Jobbörsen ausreichend, sorgfältige Vorauswahl einplanen');
+    }
+
+    // Farbe der Empfehlungsbox
+    const empfColor = asRelation === '3' ? { farbe:'#991B1B', bg:'#FEE2E2' }
+                    : asRelation === '2' ? { farbe:'#856404', bg:'#FEF3C7' }
+                    : { farbe:'#065F46', bg:'#D1FAE5' };
 
     // Detailkarte
     detail.style.display = 'block';
     detail.innerHTML = `
-      <div style="font-size:.72rem; color:var(--muted); margin-bottom:6px; display:flex; justify-content:space-between;">
+      <div style="font-size:.72rem; color:var(--muted); margin-bottom:6px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;">
         <span>Treffer: <strong>${data.treffer}</strong> (KldB ${data.kennziffer})</span>
         <span>Übereinstimmung: ${data.score}%</span>
       </div>
-      <div style="font-size:.72rem; color:var(--muted); margin-bottom:8px;">Stand: BA Engpassanalyse ${data.stand} · <a href="https://statistik.arbeitsagentur.de/DE/Navigation/Statistiken/Themen-im-Fokus/Fachkraefte/Fachkraefte-Nav.html" target="_blank" style="color:var(--accent)">Quelle ↗</a></div>
+      <div style="font-size:.72rem; color:var(--muted); margin-bottom:10px;">
+        Stand: BA Engpassanalyse ${data.stand} ·
+        <a href="https://statistik.arbeitsagentur.de/DE/Navigation/Statistiken/Themen-im-Fokus/Fachkraefte/Fachkraefte-Nav.html" target="_blank" style="color:var(--accent)">Quelle ↗</a>
+      </div>
+
       ${data.kriterien.map(k => `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #C6DDD0; font-size:.78rem;">
           <span style="color:var(--muted)">${k.label}</span>
           <span style="font-family:'DM Mono',monospace; font-weight:500; color:${scoreColor(k.wert)}">${scoreText[k.wert] ?? k.wert}</span>
         </div>`).join('')}
+
+      <div style="margin-top:12px; background:${empfColor.bg}; border-radius:8px; padding:10px 12px;">
+        <div style="font-size:.75rem; font-weight:500; color:${empfColor.farbe}; margin-bottom:8px;">
+          📣 Empfohlene Recruiting-Maßnahmen
+        </div>
+
+        <div style="font-size:.72rem; color:${empfColor.farbe}; font-weight:500; margin-bottom:4px;">Kanäle</div>
+        <ul style="margin:0 0 10px; padding-left:1.2rem; font-size:.75rem; color:${empfColor.farbe};">
+          ${kanaele.map(k => `<li style="margin-bottom:3px;">${k}</li>`).join('')}
+        </ul>
+
+        ${hinweise.length ? `
+        <div style="font-size:.72rem; color:${empfColor.farbe}; font-weight:500; margin-bottom:4px;">Hinweise</div>
+        <ul style="margin:0; padding-left:1.2rem; font-size:.75rem; color:${empfColor.farbe};">
+          ${hinweise.map(h => `<li style="margin-bottom:3px;">${h}</li>`).join('')}
+        </ul>` : ''}
+      </div>
+
       ${data.alternativen?.length ? `
         <div style="margin-top:8px; font-size:.7rem; color:var(--muted);">
           Weitere mögliche Treffer: ${data.alternativen.map(a => `${a.beruf} (${a.score}%)`).join(' · ')}
         </div>` : ''}`;
+
   } catch(e) {
     badge.className   = 'engpass-badge engpass-unk';
     badge.textContent = '? Fehler';
