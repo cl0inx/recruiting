@@ -305,7 +305,14 @@
     <div id="hhFields" style="display:none">
       <div class="field-row">
         <div class="field-label">Provision (% vom Jahresgehalt)</div>
-        <input type="number" id="headhunterPct" value="25" oninput="calculate()" />
+        <input type="number" id="headhunterPct" value="15" oninput="calculate()" />
+      </div>
+      <div class="field-row">
+        <div>
+          <div class="field-label">Mindestprovision (€)</div>
+          <div class="field-hint">Greift, wenn %-Provision darunter liegt</div>
+        </div>
+        <input type="number" id="headhunterMin" value="15000" oninput="calculate()" />
       </div>
     </div>
   </div>
@@ -489,7 +496,7 @@ function calculate() {
   const dCost     = g('deptHours') * g('deptRate');
   const boardCost = jobBoardTotal() + g('socialMedia') + g('otherAds');
   const hhCost    = document.getElementById('headhunterUsed').value === 'yes'
-                    ? salary * g('headhunterPct') / 100 : 0;
+                    ? Math.max(salary * g('headhunterPct') / 100, g('headhunterMin')) : 0;
   const obProd    = (salary / 52) * g('onboardingWeeks') * (g('productivityLoss') / 100);
   const obMat     = g('onboardingMaterial');
 
