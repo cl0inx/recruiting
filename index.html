@@ -182,8 +182,7 @@
   <h1>Einstellungskosten-Kalkulator</h1>
   <span>v2.0 · HR Analytics</span>
   <div class="ba-badge">
-    <div class="ba-dot offline" id="baDot"></div>
-    <span id="baStatus">BA-Daten nicht verbunden</span>
+    <span>HR Analytics Tool</span>
   </div>
 </header>
 
@@ -357,7 +356,6 @@
   <!-- BA-Marktdaten -->
   <div class="ba-panel">
     <h3>📡 BA-Marktdaten</h3>
-    <div id="baData"><div class="ba-loading">Konfiguriere Supabase-URL in config.js</div></div>
 
     <!-- Manueller Median -->
     <div style="margin-top:.75rem; padding-top:.75rem; border-top:1px dashed #C6DDD0;">
@@ -770,32 +768,6 @@ document.addEventListener('click', e => {
   }
 });
 
-// ── BA Marktdaten ─────────────────────────────────────────────────────────
-async function loadBAData() {
-  document.getElementById('baData').innerHTML = '<div class="ba-loading">Lade Marktdaten...</div>';
-  if (typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) {
-    document.getElementById('baData').innerHTML = '<div class="ba-error">SUPABASE_URL nicht gesetzt.</div>';
-    return;
-  }
-  try {
-    const res  = await fetch(`${SUPABASE_URL}/functions/v1/ba-proxy?action=markt&region=Deutschland`, {
-      headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    document.getElementById('baDot').className = 'ba-dot';
-    document.getElementById('baStatus').textContent = `BA-Marktdaten · ${data.stand || 'aktuell'}`;
-    document.getElementById('baData').innerHTML = `
-      <div class="ba-row"><span class="k">Gemeldete Stellen (DE)</span><span class="v">${data.gemeldeteStellenGesamt?.toLocaleString('de-DE') ?? '–'}</span></div>
-      <div class="ba-row"><span class="k">Stand</span><span class="v">${data.stand ?? '–'}</span></div>
-      <div class="ba-row"><span class="k">Median → bitte manuell eintragen</span><span class="v">↓</span></div>`;
-  } catch(e) {
-    document.getElementById('baDot').className = 'ba-dot offline';
-    document.getElementById('baStatus').textContent = 'Verbindungsfehler';
-    document.getElementById('baData').innerHTML = `<div class="ba-error">${e.message}</div>`;
-  }
-}
-
 // ── History ───────────────────────────────────────────────────────────────
 function saveToHistory() {
   const title   = document.getElementById('jobTitle').value || 'Unbenannte Stelle';
@@ -855,7 +827,6 @@ function exportCSV() {
 renderJobBoards();
 renderHistory();
 calculate();
-loadBAData();
 </script>
 </body>
 </html>
