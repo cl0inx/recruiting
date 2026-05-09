@@ -274,20 +274,36 @@
   <div class="card">
     <div class="card-title"><div class="icon icon-blue">👤</div> Personalkosten Recruiting (intern)<span class="tooltip-wrap"><i class="tooltip-btn">?</i><div class="tooltip-box">Interner Zeitaufwand für den Recruiting-Prozess. Stundensatz sollte Bruttogehalt + ca. 20% Lohnnebenkosten umfassen. Recruiter: Screening, Telefoninterviews, Koordination. Fachbereich: persönliche Interviews, Feedbackgespräche, Entscheidung.</div></span></div>
     <div class="field-row">
-      <div><div class="field-label">Stundenaufwand Recruiter</div><div class="field-hint">Screening, Koordination, Gespräche</div></div>
-      <input type="number" id="recruiterHours" value="20" oninput="calculate()" />
-    </div>
-    <div class="field-row">
       <div class="field-label">Stundensatz Recruiter inkl. NK (€)</div>
       <input type="number" id="recruiterRate" value="35" oninput="calculate()" />
     </div>
     <div class="field-row">
-      <div><div class="field-label">Stundenaufwand Fachbereich</div><div class="field-hint">Interviews, Feedback, Entscheidung</div></div>
-      <input type="number" id="deptHours" value="8" oninput="calculate()" />
-    </div>
-    <div class="field-row">
       <div class="field-label">Stundensatz Fachbereich inkl. NK (€)</div>
       <input type="number" id="deptRate" value="45" oninput="calculate()" />
+    </div>
+    <div class="field-row">
+      <div><div class="field-label">Erwartete Bewerbungen</div><div class="field-hint">Geschätzte Gesamtzahl eingehender Bewerbungen</div></div>
+      <input type="number" id="bewerbungenAnzahl" value="30" oninput="calculate()" />
+    </div>
+    <div class="field-row">
+      <div><div class="field-label">Dauer Erstgespräch (Min)</div><div class="field-hint">Telefonscreening durch Recruiter</div></div>
+      <input type="number" id="erstgespraechMin" value="30" oninput="calculate()" />
+    </div>
+    <div class="field-row">
+      <div><div class="field-label">Einladungen 1. Interview</div><div class="field-hint">Max. 10% der Bewerbungen</div></div>
+      <span id="einladung1Anzeige" style="font-family:'DM Mono',monospace; font-size:.82rem; color:var(--muted);">–</span>
+    </div>
+    <div class="field-row">
+      <div><div class="field-label">Einladungen 2. Interview</div><div class="field-hint">Max. 50% aus Runde 1</div></div>
+      <span id="einladung2Anzeige" style="font-family:'DM Mono',monospace; font-size:.82rem; color:var(--muted);">–</span>
+    </div>
+    <div class="field-row">
+      <div><div class="field-label">Recruiter-Aufwand (Std.)</div><div class="field-hint" id="recruiterStundenHint">Stellenanzeige 2h + Sichten + Erstgespräche + Koordination 3h</div></div>
+      <span id="recruiterStundenAnzeige" style="font-family:'DM Mono',monospace; font-size:.82rem; color:var(--muted);">–</span>
+    </div>
+    <div class="field-row">
+      <div><div class="field-label">Fachbereich-Aufwand (Std.)</div><div class="field-hint" id="fachbereichStundenHint">1. Interview + 2. Interview + Entscheidung 0,5h</div></div>
+      <span id="fachbereichStundenAnzeige" style="font-family:'DM Mono',monospace; font-size:.82rem; color:var(--muted);">–</span>
     </div>
   </div>
 
@@ -519,8 +535,34 @@ let lastCalc = {};
 function calculate() {
   const salary    = g('targetSalary');
   const tth       = g('timeToHire');
-  const rCost     = g('recruiterHours') * g('recruiterRate');
-  const dCost     = g('deptHours') * g('deptRate');
+  const bewerbungen      = g('bewerbungenAnzahl');
+  const recruiterRate    = g('recruiterRate');
+  const deptRate         = g('deptRate');
+  const erstgespraechMin = g('erstgespraechMin');
+
+  const einladung1 = Math.max(2, Math.ceil(bewerbungen * 0.10));
+  const einladung2 = Math.max(1, Math.ceil(einladung1 * 0.50));
+
+  const recruiterStunden = 2
+    + (bewerbungen * 1/60)
+    + (einladung1 * erstgespraechMin/60)
+    + 3;
+
+  const fachbereichStunden = (einladung1 * 90/60)
+    + (einladung2 * 90/60)
+    + 0.5;
+
+  const rCost = recruiterStunden * recruiterRate;
+  const dCost = fachbereichStunden * deptRate;
+
+  document.getElementById('einladung1Anzeige').textContent = einladung1 + ' Kandidaten';
+  document.getElementById('einladung2Anzeige').textContent = einladung2 + ' Kandidaten';
+  document.getElementById('recruiterStundenAnzeige').textContent = recruiterStunden.toFixed(1) + ' Std.';
+  document.getElementById('fachbereichStundenAnzeige').textContent = fachbereichStunden.toFixed(1) + ' Std.';
+  document.getElementById('recruiterStundenHint').textContent =
+    `Stellenanzeige 2h + Sichten ${(bewerbungen/60).toFixed(1)}h + Erstgespräche ${(einladung1 * erstgespraechMin/60).toFixed(1)}h + Koordination 3h`;
+  document.getElementById('fachbereichStundenHint').textContent =
+    `1. Interview ${(einladung1 * 1.5).toFixed(1)}h + 2. Interview ${(einladung2 * 1.5).toFixed(1)}h + Entscheidung 0,5h`;
   const boardCost = jobBoardTotal() + g('socialMedia') + g('otherAds');
   const hhCost    = document.getElementById('headhunterUsed').value === 'yes'
                     ? Math.max(salary * g('headhunterPct') / 100, g('headhunterMin')) : 0;
