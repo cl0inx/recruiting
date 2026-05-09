@@ -616,6 +616,7 @@ function selectBeruf(id, label) {
 
   // Engpass aus Datenbank laden
   fetchEngpass(label);
+  fetchStellen(label);
 }
 
 // ── Engpass-Cache & Empfehlung ────────────────────────────────────────────
@@ -728,6 +729,10 @@ async function fetchEngpass(label) {
           <span style="color:var(--muted)">${k.label}</span>
           <span style="font-family:'DM Mono',monospace; font-weight:500; color:${scoreColor(k.wert)}">${scoreText[k.wert] ?? k.wert}</span>
         </div>`).join('')}
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #C6DDD0; font-size:.78rem;">
+        <span style="color:var(--muted)">Ausgeschriebene Stellen (BA Jobsuche)</span>
+        <span id="stellenAnzahl" style="font-family:'DM Mono',monospace; font-weight:500; color:var(--accent)">lädt…</span>
+      </div>
       <div class="empf-box" style="margin-top:12px; border-radius:8px; padding:10px 12px;"></div>
       ${data.alternativen?.length ? `
         <div style="margin-top:8px; font-size:.7rem; color:var(--muted);">
@@ -740,6 +745,22 @@ async function fetchEngpass(label) {
     badge.className   = 'engpass-badge engpass-unk';
     badge.textContent = '? Fehler';
     console.error('Engpass-Fehler:', e);
+  }
+}
+
+async function fetchStellen(label) {
+  if (typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) return;
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/functions/v1/ba-proxy?action=stellen&berufLabel=${encodeURIComponent(label)}`,
+      { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+    );
+    const data = await res.json();
+    const el = document.getElementById('stellenAnzahl');
+    if (el) el.textContent = data.anzahlStellen?.toLocaleString('de-DE') ?? '–';
+  } catch(e) {
+    const el = document.getElementById('stellenAnzahl');
+    if (el) el.textContent = '–';
   }
 }
 
