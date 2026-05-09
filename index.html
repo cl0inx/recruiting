@@ -174,6 +174,25 @@
     .autocomplete-loading { padding: 8px 12px; font-size: .8rem; color: var(--muted); font-style: italic; }
 
     footer { text-align: center; padding: 2rem; font-size: .72rem; color: var(--muted); font-family: 'DM Mono', monospace; border-top: 1px solid var(--border); margin-top: 2rem; }
+
+    .tooltip-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      font-size: .65rem; color: var(--muted); cursor: pointer;
+      margin-left: 6px; flex-shrink: 0; font-style: normal;
+    }
+    .tooltip-box {
+      display: none; position: absolute; z-index: 200;
+      background: var(--text); color: var(--bg);
+      font-size: .72rem; line-height: 1.5;
+      padding: 8px 12px; border-radius: 8px;
+      max-width: 280px; margin-top: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    }
+    .tooltip-wrap { position: relative; display: inline-block; }
+    .tooltip-wrap:hover .tooltip-box,
+    .tooltip-btn:focus + .tooltip-box { display: block; }
   </style>
 </head>
 <body>
@@ -184,6 +203,7 @@
   <div class="ba-badge">
     <span>HR Analytics Tool</span>
   </div>
+  <a href="info.html" style="font-size:.72rem; font-family:'DM Mono',monospace; color:rgba(255,255,255,.7); text-decoration:none; border: 1px solid rgba(255,255,255,.3); padding: 3px 10px; border-radius: 20px; transition: all .15s; margin-left: 8px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.7)'">ℹ Dokumentation</a>
 </header>
 
 <div class="layout">
@@ -191,7 +211,7 @@
 
   <!-- Stellenprofil -->
   <div class="card">
-    <div class="card-title"><div class="icon icon-blue">💼</div> Stellenprofil</div>
+    <div class="card-title"><div class="icon icon-blue">💼</div> Stellenprofil<span class="tooltip-wrap"><i class="tooltip-btn">?</i><div class="tooltip-box">Gib die Berufsbezeichnung ein um BA-Daten wie Engpassstatus und Marktlage abzurufen. Der Standort dient nur der Dokumentation.</div></span></div>
     <div class="field-row">
       <div class="field-label">Berufsbezeichnung (BA-Suche)</div>
       <div class="autocomplete-wrap">
@@ -226,7 +246,7 @@
 
   <!-- Vakanzkosten -->
   <div class="card">
-    <div class="card-title"><div class="icon icon-warn">⏱</div> Vakanzkosten</div>
+    <div class="card-title"><div class="icon icon-warn">⏱</div> Vakanzkosten<span class="tooltip-wrap"><i class="tooltip-btn">?</i><div class="tooltip-box">Kosten die entstehen während die Stelle unbesetzt ist. Formel: (Jahresgehalt ÷ 52) × Time-to-Hire (Wochen) × Produktivitätsverlust (%). Beispiel: 50.000 € ÷ 52 × 8 Wochen × 70% = 5.385 €</div></span></div>
     <div class="field-row">
       <div>
         <div class="field-label">Produktivitätsverlust durch Vakanz (%)</div>
@@ -241,11 +261,18 @@
       </div>
       <span id="vakanzDisplay" style="font-family:'DM Mono',monospace; font-size:.85rem; color:var(--accent2);">–</span>
     </div>
+    <div class="field-row">
+      <div>
+        <div class="field-label">Kosten je weitere Woche Vakanz</div>
+        <div class="field-hint">Bei Verzögerung im Besetzungsprozess</div>
+      </div>
+      <span id="vakanzProWoche" style="font-family:'DM Mono',monospace; font-size:.85rem; color:var(--muted);">–</span>
+    </div>
   </div>
 
   <!-- Personalkosten intern -->
   <div class="card">
-    <div class="card-title"><div class="icon icon-blue">👤</div> Personalkosten Recruiting (intern)</div>
+    <div class="card-title"><div class="icon icon-blue">👤</div> Personalkosten Recruiting (intern)<span class="tooltip-wrap"><i class="tooltip-btn">?</i><div class="tooltip-box">Interner Zeitaufwand für den Recruiting-Prozess. Stundensatz sollte Bruttogehalt + ca. 20% Lohnnebenkosten umfassen. Recruiter: Screening, Telefoninterviews, Koordination. Fachbereich: persönliche Interviews, Feedbackgespräche, Entscheidung.</div></span></div>
     <div class="field-row">
       <div><div class="field-label">Stundenaufwand Recruiter</div><div class="field-hint">Screening, Koordination, Gespräche</div></div>
       <input type="number" id="recruiterHours" value="20" oninput="calculate()" />
@@ -266,7 +293,7 @@
 
   <!-- Jobbörsen -->
   <div class="card">
-    <div class="card-title"><div class="icon icon-amber">📢</div> Stellenanzeigen / Jobbörsen</div>
+    <div class="card-title"><div class="icon icon-amber">📢</div> Stellenanzeigen / Jobbörsen<span class="tooltip-wrap"><i class="tooltip-btn">?</i><div class="tooltip-box">Schaltkosten auf externen Plattformen. Laufzeit und Anzahl der Schaltungen beachten: wenn die Laufzeit kürzer als die Time-to-Hire ist, wird eine erneute Schaltung nötig — das Tool warnt automatisch.</div></span></div>
     <table class="job-board-table">
       <thead>
         <tr>
@@ -294,7 +321,7 @@
 
   <!-- Headhunter -->
   <div class="card">
-    <div class="card-title"><div class="icon icon-amber">🏢</div> Personalvermittler / Headhunter</div>
+    <div class="card-title"><div class="icon icon-amber">🏢</div> Personalvermittler / Headhunter<span class="tooltip-wrap"><i class="tooltip-btn">?</i><div class="tooltip-box">Personalvermittler werden empfohlen wenn Vakanzkosten über 15.000 € liegen oder der Bewerbermarkt stark angespannt ist. Provision üblicherweise 20–30% des Jahresgehalts. Voraussetzung: Bereitschaft des Fachbereichs zur Zusammenarbeit.</div></span></div>
     <div class="field-row">
       <div class="field-label">Headhunter eingesetzt?</div>
       <select id="headhunterUsed" onchange="toggleHH(); calculate()">
@@ -319,7 +346,7 @@
 
   <!-- Onboarding -->
   <div class="card">
-    <div class="card-title"><div class="icon icon-green">🚀</div> Onboarding &amp; Einarbeitung</div>
+    <div class="card-title"><div class="icon icon-green">🚀</div> Onboarding &amp; Einarbeitung<span class="tooltip-wrap"><i class="tooltip-btn">?</i><div class="tooltip-box">Kosten nach der Einstellung bis zur vollen Produktivität. Produktivitätsverlust: geschätzte Minderleistung pro Woche in %. Formel: (Jahresgehalt ÷ 52) × Einarbeitungswochen × Verlust%. Materialkosten: Equipment, Softwarelizenzen, Schulungen.</div></span></div>
     <div class="field-row">
       <div><div class="field-label">Einarbeitungsdauer (Wochen)</div><div class="field-hint">Bis zur vollen Produktivität</div></div>
       <input type="number" id="onboardingWeeks" value="8" oninput="calculate()" />
@@ -518,6 +545,8 @@ function calculate() {
   document.getElementById('vakanzSplit').textContent     = fmt(vakanz);
   document.getElementById('onboardingDisplay').textContent = fmt(onboarding);
   document.getElementById('vakanzDisplay').textContent   = fmt(vakanz);
+  const vakanzProWoche = salary > 0 ? (salary / 52) * (g('vakanzProd') / 100) : 0;
+  document.getElementById('vakanzProWoche').textContent = vakanzProWoche > 0 ? fmt(vakanzProWoche) + ' / Woche' : '–';
 
   // Laufzeit-Warnung aktualisieren
   checkLaufzeit();

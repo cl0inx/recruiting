@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dokumentation · Einstellungskosten-Kalkulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:      #F5F3EE;
+      --surface: #FFFFFF;
+      --border:  #E2DDD5;
+      --text:    #1A1814;
+      --muted:   #7A746A;
+      --accent:  #2A4D3C;
+      --accent2: #C85A2A;
+      --info:    #1C3D6E;
+      --tag-bg:  #EAE6DE;
+      --radius:  10px;
+      --shadow:  0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    header {
+      background: var(--accent); color: #fff;
+      padding: 1.5rem 2rem;
+      display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+    }
+    header h1 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; font-weight: 400; }
+    header span { font-size: .75rem; opacity: .6; font-family: 'DM Mono', monospace; }
+    .back-link {
+      margin-left: auto; font-size: .72rem; font-family: 'DM Mono', monospace;
+      color: rgba(255,255,255,.8); text-decoration: none;
+      border: 1px solid rgba(255,255,255,.3); padding: 3px 10px; border-radius: 20px;
+      transition: all .15s;
+    }
+    .back-link:hover { color: #fff; border-color: rgba(255,255,255,.7); }
+
+    .content {
+      max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem;
+    }
+
+    .section { margin-bottom: 2.5rem; }
+    .section-title {
+      font-family: 'DM Serif Display', serif; font-size: 1.3rem; font-weight: 400;
+      margin-bottom: 1rem; padding-bottom: .5rem; border-bottom: 2px solid var(--border);
+    }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow); margin-bottom: 1rem;
+    }
+    .card-title {
+      font-family: 'DM Mono', monospace; font-size: .72rem; font-weight: 500;
+      color: var(--accent); text-transform: uppercase; letter-spacing: .06em;
+      margin-bottom: .75rem;
+    }
+
+    .formula-box {
+      background: #EEF4F0; border: 1px solid #C6DDD0; border-radius: 8px;
+      padding: .75rem 1rem; font-family: 'DM Mono', monospace; font-size: .82rem;
+      color: var(--accent); margin: .5rem 0 .75rem; line-height: 1.6;
+    }
+    .example-box {
+      background: var(--tag-bg); border-radius: 8px;
+      padding: .6rem 1rem; font-size: .8rem; color: var(--muted);
+      font-family: 'DM Mono', monospace; margin-bottom: .5rem;
+    }
+
+    .gesamtformel {
+      background: #EEF4F0; border: 1px solid #C6DDD0; border-radius: var(--radius);
+      padding: 1.25rem 1.5rem; font-family: 'DM Mono', monospace; font-size: .88rem;
+      color: var(--accent); line-height: 2; margin-bottom: 1.5rem;
+    }
+    .gesamtformel .op { color: var(--muted); }
+
+    p { font-size: .88rem; line-height: 1.7; color: var(--text); margin-bottom: .5rem; }
+    .hint { font-size: .8rem; color: var(--muted); line-height: 1.6; }
+
+    .criteria-table { width: 100%; border-collapse: collapse; margin-top: .5rem; }
+    .criteria-table th {
+      font-size: .72rem; color: var(--muted); text-align: left;
+      padding: 5px 8px; border-bottom: 1px solid var(--border); font-weight: 500;
+    }
+    .criteria-table td { padding: 6px 8px; font-size: .82rem; border-bottom: 1px solid var(--tag-bg); }
+    .criteria-table tr:last-child td { border-bottom: none; }
+    .score-3 { color: #991B1B; font-family: 'DM Mono', monospace; font-weight: 500; }
+    .score-2 { color: #856404; font-family: 'DM Mono', monospace; font-weight: 500; }
+    .score-1 { color: #065F46; font-family: 'DM Mono', monospace; font-weight: 500; }
+    .score-0 { color: var(--muted); font-family: 'DM Mono', monospace; font-weight: 500; }
+
+    .source-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: .6rem 0; border-bottom: 1px solid var(--tag-bg); font-size: .85rem; gap: 1rem;
+    }
+    .source-row:last-child { border-bottom: none; }
+    .source-name { font-weight: 500; flex: 1; }
+    .source-meta { font-size: .75rem; color: var(--muted); flex: 2; }
+    a { color: var(--accent); }
+
+    .update-row {
+      display: flex; gap: 1rem; align-items: baseline;
+      padding: .5rem 0; border-bottom: 1px solid var(--tag-bg); font-size: .82rem;
+    }
+    .update-row:last-child { border-bottom: none; }
+    .update-label { font-family: 'DM Mono', monospace; font-size: .75rem; color: var(--accent); min-width: 180px; }
+
+    footer { text-align: center; padding: 2rem; font-size: .72rem; color: var(--muted); font-family: 'DM Mono', monospace; border-top: 1px solid var(--border); margin-top: 2rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Dokumentation · Einstellungskosten-Kalkulator</h1>
+  <span>v2.0 · HR Analytics</span>
+  <a href="index.html" class="back-link">← Zurück zum Kalkulator</a>
+</header>
+
+<div class="content">
+
+  <!-- 1. Gesamtformel -->
+  <div class="section">
+    <div class="section-title">Gesamtformel</div>
+    <div class="gesamtformel">
+      Gesamtkosten<br>
+      <span class="op">=</span> Vakanzkosten<br>
+      <span class="op">+</span> Personalkosten Recruiting (intern)<br>
+      <span class="op">+</span> Stellenanzeigen &amp; Social Media<br>
+      <span class="op">+</span> Headhunter-Provision<br>
+      <span class="op">+</span> Onboarding-Kosten
+    </div>
+    <p class="hint">Alle Bausteine sind optional bzw. auf 0 setzbar. Die Gesamtkosten werden als Betrag und als Prozentsatz des Zielgehalts ausgewiesen.</p>
+  </div>
+
+  <!-- 2. Kostenbaustein einzeln -->
+  <div class="section">
+    <div class="section-title">Kostenbaustein im Detail</div>
+
+    <div class="card">
+      <div class="card-title">Vakanzkosten</div>
+      <div class="formula-box">Vakanzkosten = (Jahresgehalt ÷ 52) × Time-to-Hire (Wo.) × Produktivitätsverlust (%)</div>
+      <div class="example-box">Beispiel @ 50.000 €: (50.000 ÷ 52) × 8 × 0,70 = 5.385 €</div>
+      <p class="hint">Kalibrierung: Produktivitätsverlust beschreibt, welcher Anteil der Stelle dem Team täglich fehlt. 70 % ist ein guter Ausgangswert für Vollzeitstellen mit wenig Puffer im Team. Bei Stellen mit hohem Überstundenausgleich ggf. reduzieren.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Personalkosten Recruiting (intern)</div>
+      <div class="formula-box">Recruiter-Kosten = Stunden Recruiter × Stundensatz Recruiter<br>Fachbereich-Kosten = Stunden Fachbereich × Stundensatz Fachbereich</div>
+      <div class="example-box">Beispiel @ 50.000 €: 20h × 35 € + 8h × 45 € = 1.060 €</div>
+      <p class="hint">Kalibrierung: Stundensatz = Jahresbruttogehalt ÷ 1.720 Arbeitsstunden × 1,20 (Lohnnebenkosten). Recruiter-Aufwand umfasst Stellenausschreibung, Screening, Telefoninterviews, Terminkoordination. Fachbereich: persönliche Gespräche, Feedbackrunden, Entscheidungsabstimmung.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Stellenanzeigen &amp; Social Media</div>
+      <div class="formula-box">Anzeigenkosten = Σ (Preis × Anzahl Schaltungen) + Social Media + Sonstige</div>
+      <div class="example-box">Beispiel: StepStone 600 € + Indeed 300 € + LinkedIn 200 € = 1.100 €</div>
+      <p class="hint">Kalibrierung: Wenn die Laufzeit einer Schaltung kürzer als die erwartete Time-to-Hire ist, zeigt das Tool automatisch eine Warnung. Bei Engpassberufen empfiehlt sich eine längere Laufzeit oder mehrfache Schaltung einzuplanen.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Headhunter-Provision</div>
+      <div class="formula-box">Provision = max(Jahresgehalt × Provisionssatz %, Mindestprovision €)</div>
+      <div class="example-box">Beispiel @ 50.000 €: max(50.000 × 15%, 15.000 €) = max(7.500 €, 15.000 €) = 15.000 €</div>
+      <p class="hint">Kalibrierung: Personalvermittler sind wirtschaftlich sinnvoll wenn die Vakanzkosten die Provision übersteigen oder der Bewerbermarkt stark angespannt ist (Engpassbewertung 3). Provision marktüblich 20–30 %, Mindestprovision typisch 12.000–18.000 €.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Onboarding-Kosten</div>
+      <div class="formula-box">Produktivitätsverlust = (Jahresgehalt ÷ 52) × Einarbeitungswochen × Verlust%<br>Gesamtkosten Onboarding = Produktivitätsverlust + Materialkosten</div>
+      <div class="example-box">Beispiel @ 50.000 €: (50.000 ÷ 52) × 8 × 0,60 + 500 € = 4.115 €</div>
+      <p class="hint">Richtwerte Einarbeitungsdauer &amp; Verlust: einfache Tätigkeiten 4–6 Wo. / 40–50 %, Fachkräfte 8–12 Wo. / 60–70 %, Führungskräfte 16+ Wo. / 70–80 %. Materialkosten umfassen Equipment, Softwarelizenzen, externe Schulungen, Onboarding-Unterlagen.</p>
+    </div>
+  </div>
+
+  <!-- 3. Datenquellen -->
+  <div class="section">
+    <div class="section-title">Datenquellen</div>
+
+    <div class="card">
+      <div class="source-row">
+        <span class="source-name">BA BERUFENET</span>
+        <span class="source-meta">Berufssuche &amp; Autocomplete · öffentliche API · keine Anmeldung erforderlich</span>
+      </div>
+      <div class="source-row">
+        <span class="source-name">BA Fachkräfteengpassanalyse</span>
+        <span class="source-meta">Grundlage der Engpassbewertung · Stand Dez. 2024 · jährliche Aktualisierung ·
+          <a href="https://statistik.arbeitsagentur.de/DE/Navigation/Statistiken/Themen-im-Fokus/Fachkraefte/Fachkraefte-Nav.html" target="_blank">statistik.arbeitsagentur.de ↗</a>
+        </span>
+      </div>
+      <div class="source-row">
+        <span class="source-name">BA Entgeltatlas</span>
+        <span class="source-meta">Median-Richtwerte · manuell einzutragen ·
+          <a href="https://web.arbeitsagentur.de/entgeltatlas/" target="_blank">web.arbeitsagentur.de/entgeltatlas ↗</a>
+        </span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Engpass-Kriterien (Skala 0–3)</div>
+      <table class="criteria-table">
+        <thead>
+          <tr>
+            <th>Wert</th>
+            <th>Bedeutung</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="score-3">3 — erhöht</span></td><td>Deutlicher Mangel in diesem Kriterium, stark angespannter Markt</td></tr>
+          <tr><td><span class="score-2">2 — leicht erhöht</span></td><td>Tendenz zum Engpass erkennbar, Markt leicht angespannt</td></tr>
+          <tr><td><span class="score-1">1 — unauffällig</span></td><td>Kein Hinweis auf Engpass in diesem Kriterium</td></tr>
+          <tr><td><span class="score-0">0 — kein Hinweis</span></td><td>Ausreichendes Angebot, kein Engpass-Signal</td></tr>
+        </tbody>
+      </table>
+      <p class="hint" style="margin-top:.75rem">Die sechs Kriterien: Stellen-Bewerber-Relation, Vakanzzeit, Anforderungsniveau, Beschäftigungsentwicklung, Entgelt-Niveau, Engpassindikator gesamt. Die Gesamtbewertung ist ein gewichteter Mittelwert.</p>
+    </div>
+  </div>
+
+  <!-- 4. Annahmen und Einschränkungen -->
+  <div class="section">
+    <div class="section-title">Annahmen &amp; Einschränkungen</div>
+    <div class="card">
+      <p>• <strong>Vakanzkosten</strong> sind ein Schätzwert — tatsächliche Kosten hängen von Überstunden, Qualitätsverlust und Vertretungsregelungen ab.</p>
+      <p>• <strong>Stundensätze</strong> sollten Arbeitgeberbrutto inkl. aller Nebenkosten enthalten (ca. Bruttogehalt + 20 %).</p>
+      <p>• <strong>Onboarding-Produktivitätsverlust</strong> ist berufs- und unternehmensabhängig. Richtwerte: einfache Tätigkeiten 4–6 Wochen / 40–50 %, Fachkräfte 8–12 Wochen / 60–70 %, Führungskräfte 16+ Wochen / 70–80 %.</p>
+      <p>• <strong>Median-Entgelt</strong> ist ein Richtwert aus dem BA Entgeltatlas für Vollzeitbeschäftigte (alle Geschlechter). Für bessere Genauigkeit den regionalen Median verwenden.</p>
+      <p>• <strong>Engpassanalyse</strong> deckt primär Fachkräfte auf Ausbildungsniveau ab — akademische Berufe und Führungspositionen sind nicht vollständig enthalten.</p>
+    </div>
+  </div>
+
+  <!-- 5. Updatezyklus -->
+  <div class="section">
+    <div class="section-title">Updatezyklus</div>
+    <div class="card">
+      <div class="update-row">
+        <span class="update-label">Engpassdaten</span>
+        <span>Jährlich (Dezember) · manuell in Supabase zu aktualisieren</span>
+      </div>
+      <div class="update-row">
+        <span class="update-label">Median-Entgelt</span>
+        <span>Jährlich im BA Entgeltatlas verfügbar · manuell einzutragen</span>
+      </div>
+      <div class="update-row">
+        <span class="update-label">Tool-Version</span>
+        <span>v2.0 · Stand Mai 2026</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Einstellungskosten-Kalkulator v2.0 · Engpassdaten: BA Fachkräfteengpassanalyse · Entgeltdaten: <a href="https://web.arbeitsagentur.de/entgeltatlas/" target="_blank" style="color:inherit">BA Entgeltatlas</a> · Intern entwickelt
+</footer>
+
+</body>
+</html>
