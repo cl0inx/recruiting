@@ -246,7 +246,7 @@
 
   <!-- Vakanzkosten -->
   <div class="card">
-    <div class="card-title"><div class="icon icon-warn">⏱</div> Vakanzkosten<span class="tooltip-wrap"><i class="tooltip-btn">?</i><div class="tooltip-box">Kosten die entstehen während die Stelle unbesetzt ist. Formel: (Jahresgehalt ÷ 52) × Time-to-Hire (Wochen) × Produktivitätsverlust (%). Beispiel: 50.000 € ÷ 52 × 8 Wochen × 70% = 5.385 €</div></span></div>
+    <div class="card-title"><div class="icon icon-warn">⏱</div> Vakanzkosten<span class="tooltip-wrap"><i class="tooltip-btn">?</i><div class="tooltip-box">Kosten während die Stelle unbesetzt ist. Formel: (Jahresgehalt ÷ 52) × Time-to-Hire × Produktivitätsverlust%. Die wöchentlichen Mehrkosten bei Verzögerung umfassen zusätzlich die anteiligen Schaltkosten der Jobbörsen.</div></span></div>
     <div class="field-row">
       <div>
         <div class="field-label">Produktivitätsverlust durch Vakanz (%)</div>
@@ -260,13 +260,6 @@
         <div class="field-hint">Wochenlohn × Time-to-Hire × Produktivitätsverlust</div>
       </div>
       <span id="vakanzDisplay" style="font-family:'DM Mono',monospace; font-size:.85rem; color:var(--accent2);">–</span>
-    </div>
-    <div class="field-row">
-      <div>
-        <div class="field-label">Kosten je weitere Woche Vakanz</div>
-        <div class="field-hint">Bei Verzögerung im Besetzungsprozess</div>
-      </div>
-      <span id="vakanzProWoche" style="font-family:'DM Mono',monospace; font-size:.85rem; color:var(--muted);">–</span>
     </div>
   </div>
 
@@ -305,7 +298,7 @@
 
   <!-- Jobbörsen -->
   <div class="card">
-    <div class="card-title"><div class="icon icon-amber">📢</div> Stellenanzeigen / Jobbörsen<span class="tooltip-wrap"><i class="tooltip-btn">?</i><div class="tooltip-box">Schaltkosten auf externen Plattformen. Laufzeit und Anzahl der Schaltungen beachten: wenn die Laufzeit kürzer als die Time-to-Hire ist, wird eine erneute Schaltung nötig — das Tool warnt automatisch.</div></span></div>
+    <div class="card-title"><div class="icon icon-amber">📢</div> Stellenanzeigen / Jobbörsen<span class="tooltip-wrap"><i class="tooltip-btn">?</i><div class="tooltip-box">Schaltkosten auf externen Plattformen. Fließen anteilig in die wöchentlichen Vakanzkosten ein — jede zusätzliche Woche Verzögerung kostet Jobbörsenbudget ÷ Time-to-Hire extra.</div></span></div>
     <table class="job-board-table">
       <thead>
         <tr>
@@ -385,7 +378,7 @@
 
   <!-- Kostenprognose -->
   <div class="card">
-    <div class="card-title"><div class="icon icon-green">📊</div> Kostenprognose</div>
+    <div class="card-title"><div class="icon icon-green">📊</div> Kostenprognose<span class="tooltip-wrap"><i class="tooltip-btn">?</i><div class="tooltip-box">Gesamtkosten = Vakanzkosten + Recruiting intern + Stellenanzeigen + Headhunter + Onboarding. Kosten je weitere Woche = wöchentlicher Produktivitätsverlust + anteilige Schaltkosten.</div></span></div>
     <div class="metric-big" id="totalDisplay">–</div>
     <div class="metric-sub" id="pctDisplay">– % des Jahresgehalts</div>
 
@@ -397,6 +390,14 @@
     </div>
 
     <div class="bar-list" id="barList"></div>
+
+    <div style="background:#FEF3C7; border:1px solid #FDE68A; border-radius:8px; padding:10px 14px; margin-top:4px; display:flex; justify-content:space-between; align-items:baseline;">
+      <div>
+        <div style="font-size:.75rem; font-weight:500; color:#78350F;">⏱ Kosten je weitere Woche Vakanz</div>
+        <div style="font-size:.7rem; color:#92400E; margin-top:2px;">Produktivitätsverlust + anteilige Schaltkosten</div>
+      </div>
+      <div id="vakanzProWoche" style="font-family:'DM Mono',monospace; font-size:1rem; font-weight:500; color:#78350F;">–</div>
+    </div>
   </div>
 
   <!-- BA-Marktdaten -->
@@ -582,8 +583,10 @@ function calculate() {
   document.getElementById('vakanzSplit').textContent     = fmt(vakanz);
   document.getElementById('onboardingDisplay').textContent = fmt(onboarding);
   document.getElementById('vakanzDisplay').textContent   = fmt(vakanz);
-  const vakanzProWoche = salary > 0 ? (salary / 52) * (g('vakanzProd') / 100) : 0;
-  document.getElementById('vakanzProWoche').textContent = vakanzProWoche > 0 ? fmt(vakanzProWoche) + ' / Woche' : '–';
+  const wochenkosten = salary > 0
+    ? ((salary / 52) * (g('vakanzProd') / 100)) + (boardCost / Math.max(tth, 1))
+    : 0;
+  document.getElementById('vakanzProWoche').textContent = wochenkosten > 0 ? fmt(wochenkosten) + ' / Woche' : '–';
 
   // Laufzeit-Warnung aktualisieren
   checkLaufzeit();
