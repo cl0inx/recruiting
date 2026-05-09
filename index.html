@@ -402,7 +402,32 @@
 <script src="config.js"></script>
 <script>
 
+// ── Hilfsfunktionen (global) ──────────────────────────────────────────────
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
 
+function escCsv(val) {
+  const s = String(val);
+  if (/[;\n\r"=+\-@]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
+function getHistory() {
+  try {
+    return JSON.parse(localStorage.getItem('ek_history') || '[]');
+  } catch {
+    return [];
+  }
+}
+
+const scoreColor = v => v === '3' ? '#991B1B' : v === '2' ? '#856404' : v === '1' ? '#065F46' : '#6B7280';
+const scoreText  = { '3': 'erhöht', '2': 'leicht erhöht', '1': 'unauffällig', '0': 'kein Hinweis', 'X': 'k.A.' };
 
 // ── Jobbörsen-Tabelle ─────────────────────────────────────────────────────
 let jobBoards = [
@@ -414,7 +439,7 @@ function renderJobBoards() {
   const tbody = document.getElementById('jobBoardBody');
   tbody.innerHTML = jobBoards.map((b, i) => `
     <tr>
-      <td><input type="text" value="${b.name}" oninput="jobBoards[${i}].name=this.value; calculate()" style="width:100%; min-width:90px; text-align:left;" /></td>
+      <td><input type="text" value="${escHtml(b.name)}" oninput="jobBoards[${i}].name=this.value; calculate()" style="width:100%; min-width:90px; text-align:left;" /></td>
       <td><input type="number" value="${b.preis}" oninput="jobBoards[${i}].preis=+this.value; calculate()" style="width:72px;" /></td>
       <td><input type="number" value="${b.laufzeit}" oninput="jobBoards[${i}].laufzeit=+this.value; calculate()" style="width:72px;" /></td>
       <td><input type="number" value="${b.anzahl}" min="1" oninput="jobBoards[${i}].anzahl=+this.value; calculate()" style="width:55px;" /></td>
@@ -562,13 +587,17 @@ async function fetchBerufe(q) {
     const res  = await fetch(`${SUPABASE_URL}/functions/v1/ba-proxy?action=berufe&q=${encodeURIComponent(q)}`, {
       headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
     });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     const berufe = data.berufe ?? [];
     if (!berufe.length) { list.innerHTML = '<div class="autocomplete-loading">Keine Treffer</div>'; return; }
     list.innerHTML = berufe.map(b => `
-      <div class="autocomplete-item" onclick="selectBeruf('${b.id}','${b.label.replace(/'/g,"\\'")}')">
-        ${b.label}
+      <div class="autocomplete-item" data-id="${escHtml(b.id)}" data-label="${escHtml(b.label)}">
+        ${escHtml(b.label)}
       </div>`).join('');
+    list.querySelectorAll('.autocomplete-item').forEach(el => {
+      el.addEventListener('click', () => selectBeruf(el.dataset.id, el.dataset.label));
+    });
   } catch(e) {
     list.innerHTML = '<div class="autocomplete-loading">Verbindungsfehler</div>';
   }
@@ -596,9 +625,6 @@ function updateEmpfehlung() {
   const detail = document.getElementById('engpassDetail');
   if (!lastEngpassData || detail.style.display === 'none') return;
   const data = lastEngpassData;
-
-  const scoreColor = v => v === '3' ? '#991B1B' : v === '2' ? '#856404' : v === '1' ? '#065F46' : '#6B7280';
-  const scoreText  = { '3': 'erhöht', '2': 'leicht erhöht', '1': 'unauffällig', '0': 'kein Hinweis', 'X': 'k.A.' };
 
   const asRelation   = data.kriterien?.find(k => k.label.includes('Stellen-Relation'))?.wert ?? 'X';
   const salary       = parseFloat(document.getElementById('targetSalary')?.value) || 0;
@@ -662,6 +688,7 @@ async function fetchEngpass(label) {
       `${SUPABASE_URL}/functions/v1/ba-proxy?action=engpass&berufLabel=${encodeURIComponent(label)}`,
       { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
     );
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
     if (!data.treffer) {
@@ -685,9 +712,6 @@ async function fetchEngpass(label) {
     badge.onclick = () => {
       detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
     };
-
-    const scoreColor = v => v === '3' ? '#991B1B' : v === '2' ? '#856404' : v === '1' ? '#065F46' : '#6B7280';
-    const scoreText  = { '3': 'erhöht', '2': 'leicht erhöht', '1': 'unauffällig', '0': 'kein Hinweis', 'X': 'k.A.' };
 
     detail.style.display = 'block';
     detail.innerHTML = `
@@ -755,24 +779,24 @@ async function loadBAData() {
 function saveToHistory() {
   const title   = document.getElementById('jobTitle').value || 'Unbenannte Stelle';
   const standort= document.getElementById('standort').value || '';
-  const entries = JSON.parse(localStorage.getItem('ek_history') || '[]');
+  const entries = getHistory();
   entries.unshift({
     title, standort, total: lastCalc.total, salary: lastCalc.salary,
     date: new Date().toLocaleDateString('de-DE'),
   });
-  localStorage.setItem('ek_history', JSON.stringify(entries.slice(0, 20)));
+  try { localStorage.setItem('ek_history', JSON.stringify(entries.slice(0, 20))); } catch {}
   renderHistory();
 }
 
 function renderHistory() {
-  const entries = JSON.parse(localStorage.getItem('ek_history') || '[]');
+  const entries = getHistory();
   const el = document.getElementById('historyList');
   if (!entries.length) { el.innerHTML = '<div class="no-history">Noch keine Kalkulationen gespeichert.</div>'; return; }
-  el.innerHTML = entries.map((e, i) => `
+  el.innerHTML = entries.map(e => `
     <div class="history-item">
       <div>
-        <div class="h-title">${e.title}${e.standort ? ' · ' + e.standort : ''}</div>
-        <div style="font-size:.7rem">${e.date}</div>
+        <div class="h-title">${escHtml(e.title)}${e.standort ? ' · ' + escHtml(e.standort) : ''}</div>
+        <div style="font-size:.7rem">${escHtml(e.date)}</div>
       </div>
       <div class="h-cost">${fmt(e.total)}</div>
     </div>`).join('');
@@ -796,18 +820,21 @@ function exportCSV() {
     ['Time-to-Hire (Wochen)', c.tth],
     ['Anteil am Jahresgehalt %', c.salary ? Math.round(c.total/c.salary*100) : 0],
   ];
-  const csv  = rows.map(r => r.join(';')).join('\n');
+  const csv  = rows.map(r => r.map(escCsv).join(';')).join('\n');
   const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
-  a.href     = URL.createObjectURL(blob);
+  a.href     = url;
   a.download = `einstellungskosten_${title.replace(/\s+/g,'_')}.csv`;
   a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────
 renderJobBoards();
 renderHistory();
 calculate();
+loadBAData();
 </script>
 </body>
 </html>
