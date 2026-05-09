@@ -286,10 +286,6 @@
       <input type="number" id="bewerbungenAnzahl" value="30" oninput="calculate()" />
     </div>
     <div class="field-row">
-      <div><div class="field-label">Dauer Erstgespräch (Min)</div><div class="field-hint">Telefonscreening durch Recruiter</div></div>
-      <input type="number" id="erstgespraechMin" value="30" oninput="calculate()" />
-    </div>
-    <div class="field-row">
       <div><div class="field-label">Einladungen 1. Interview</div><div class="field-hint">Max. 10% der Bewerbungen</div></div>
       <span id="einladung1Anzeige" style="font-family:'DM Mono',monospace; font-size:.82rem; color:var(--muted);">–</span>
     </div>
@@ -535,22 +531,21 @@ let lastCalc = {};
 function calculate() {
   const salary    = g('targetSalary');
   const tth       = g('timeToHire');
-  const bewerbungen      = g('bewerbungenAnzahl');
-  const recruiterRate    = g('recruiterRate');
-  const deptRate         = g('deptRate');
-  const erstgespraechMin = g('erstgespraechMin');
+  const bewerbungen   = g('bewerbungenAnzahl');
+  const recruiterRate = g('recruiterRate');
+  const deptRate      = g('deptRate');
 
   const einladung1 = Math.max(2, Math.ceil(bewerbungen * 0.10));
   const einladung2 = Math.max(1, Math.ceil(einladung1 * 0.50));
 
+  const interviewStunden = (einladung1 + einladung2) * 90/60;
+
   const recruiterStunden = 2
     + (bewerbungen * 1/60)
-    + (einladung1 * erstgespraechMin/60)
+    + interviewStunden
     + 3;
 
-  const fachbereichStunden = (einladung1 * 90/60)
-    + (einladung2 * 90/60)
-    + 0.5;
+  const fachbereichStunden = interviewStunden;
 
   const rCost = recruiterStunden * recruiterRate;
   const dCost = fachbereichStunden * deptRate;
@@ -560,9 +555,9 @@ function calculate() {
   document.getElementById('recruiterStundenAnzeige').textContent = recruiterStunden.toFixed(1) + ' Std.';
   document.getElementById('fachbereichStundenAnzeige').textContent = fachbereichStunden.toFixed(1) + ' Std.';
   document.getElementById('recruiterStundenHint').textContent =
-    `Stellenanzeige 2h + Sichten ${(bewerbungen/60).toFixed(1)}h + Erstgespräche ${(einladung1 * erstgespraechMin/60).toFixed(1)}h + Koordination 3h`;
+    `Stellenanzeige 2h + Sichten ${(bewerbungen/60).toFixed(1)}h + Interviews ${interviewStunden.toFixed(1)}h + Koordination 3h`;
   document.getElementById('fachbereichStundenHint').textContent =
-    `1. Interview ${(einladung1 * 1.5).toFixed(1)}h + 2. Interview ${(einladung2 * 1.5).toFixed(1)}h + Entscheidung 0,5h`;
+    `1. Interview ${(einladung1 * 1.5).toFixed(1)}h + 2. Interview ${(einladung2 * 1.5).toFixed(1)}h`;
   const boardCost = jobBoardTotal() + g('socialMedia') + g('otherAds');
   const hhCost    = document.getElementById('headhunterUsed').value === 'yes'
                     ? Math.max(salary * g('headhunterPct') / 100, g('headhunterMin')) : 0;
