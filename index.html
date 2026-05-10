@@ -279,6 +279,20 @@
       <input type="number" id="bewerbungenAnzahl" value="30" oninput="calculate()" />
     </div>
     <div class="field-row">
+      <div>
+        <div class="field-label">Quote 1. Interview (%)</div>
+        <div class="field-hint">Anteil der Bewerbungen der eingeladen wird</div>
+      </div>
+      <input type="number" id="quote1" value="10" min="1" max="100" oninput="calculate()" />
+    </div>
+    <div class="field-row">
+      <div>
+        <div class="field-label">Quote 2. Interview (%)</div>
+        <div class="field-hint">Anteil aus Runde 1 der weiterkommt</div>
+      </div>
+      <input type="number" id="quote2" value="50" min="1" max="100" oninput="calculate()" />
+    </div>
+    <div class="field-row">
       <div><div class="field-label">Einladungen 1. Interview</div><div class="field-hint">Max. 10% der Bewerbungen</div></div>
       <span id="einladung1Anzeige" style="font-family:'DM Mono',monospace; font-size:.82rem; color:var(--muted);">–</span>
     </div>
@@ -391,12 +405,12 @@
 
     <div class="bar-list" id="barList"></div>
 
-    <div style="background:#FEF3C7; border:1px solid #FDE68A; border-radius:8px; padding:10px 14px; margin-top:4px; display:flex; justify-content:space-between; align-items:baseline;">
+    <div style="background:#FEF3C7; border:1px solid #FDE68A; border-radius:8px; padding:10px 14px; margin-top:4px; display:flex; justify-content:space-between; align-items:center;">
       <div>
         <div style="font-size:.75rem; font-weight:500; color:#78350F;">⏱ Kosten je weitere Woche Vakanz</div>
         <div style="font-size:.7rem; color:#92400E; margin-top:2px;">Produktivitätsverlust + anteilige Schaltkosten</div>
       </div>
-      <div id="vakanzProWoche" style="font-family:'DM Mono',monospace; font-size:1rem; font-weight:500; color:#78350F;">–</div>
+      <div id="vakanzProWoche" style="font-family:'DM Mono',monospace; font-size:1rem; font-weight:500; color:#78350F; text-align:right; flex-shrink:0; margin-left:12px;">–</div>
     </div>
   </div>
 
@@ -536,8 +550,11 @@ function calculate() {
   const recruiterRate = g('recruiterRate');
   const deptRate      = g('deptRate');
 
-  const einladung1 = Math.max(2, Math.ceil(bewerbungen * 0.10));
-  const einladung2 = Math.max(1, Math.ceil(einladung1 * 0.50));
+  const quote1 = g('quote1') / 100;
+  const quote2 = g('quote2') / 100;
+
+  const einladung1 = Math.max(2, Math.ceil(bewerbungen * quote1));
+  const einladung2 = Math.max(1, Math.ceil(einladung1 * quote2));
 
   const interviewStunden = (einladung1 + einladung2) * 90/60;
 
