@@ -759,18 +759,10 @@ async function fetchEngpass(label) {
       badge.textContent    = '? nicht gefunden';
       detail.style.display = 'none';
       lastEngpassData      = null;
-      const atlasLinkFallback = document.getElementById('atlasLink');
-      if (atlasLinkFallback) { atlasLinkFallback.href = 'https://web.arbeitsagentur.de/entgeltatlas/'; atlasLinkFallback.textContent = 'BA Entgeltatlas öffnen ↗'; }
       return;
     }
 
     lastEngpassData = data;
-
-    const atlasLink = document.getElementById('atlasLink');
-    if (atlasLink && data.kennziffer) {
-      atlasLink.href = `https://web.arbeitsagentur.de/entgeltatlas/beruf/${data.kennziffer}`;
-      atlasLink.textContent = `${data.treffer} im Entgeltatlas ↗`;
-    }
 
     if (data.engpass) {
       badge.className   = 'engpass-badge engpass-ja';
