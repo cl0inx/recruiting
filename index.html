@@ -280,25 +280,17 @@
     </div>
     <div class="field-row">
       <div>
-        <div class="field-label">Quote 1. Interview (%)</div>
-        <div class="field-hint">Anteil der Bewerbungen der eingeladen wird</div>
+        <div class="field-label">Kandidaten 1. Interview</div>
+        <div class="field-hint">Anzahl Einladungen Runde 1</div>
       </div>
-      <input type="number" id="quote1" value="10" min="1" max="100" oninput="calculate()" />
+      <input type="number" id="einladung1" value="3" min="1" oninput="calculate()" />
     </div>
     <div class="field-row">
       <div>
-        <div class="field-label">Quote 2. Interview (%)</div>
-        <div class="field-hint">Anteil aus Runde 1 der weiterkommt</div>
+        <div class="field-label">Kandidaten 2. Interview</div>
+        <div class="field-hint">Anzahl Einladungen Runde 2</div>
       </div>
-      <input type="number" id="quote2" value="50" min="1" max="100" oninput="calculate()" />
-    </div>
-    <div class="field-row">
-      <div><div class="field-label">Einladungen 1. Interview</div><div class="field-hint">Max. 10% der Bewerbungen</div></div>
-      <span id="einladung1Anzeige" style="font-family:'DM Mono',monospace; font-size:.82rem; color:var(--muted);">–</span>
-    </div>
-    <div class="field-row">
-      <div><div class="field-label">Einladungen 2. Interview</div><div class="field-hint">Max. 50% aus Runde 1</div></div>
-      <span id="einladung2Anzeige" style="font-family:'DM Mono',monospace; font-size:.82rem; color:var(--muted);">–</span>
+      <input type="number" id="einladung2" value="2" min="1" oninput="calculate()" />
     </div>
     <div class="field-row">
       <div><div class="field-label">Recruiter-Aufwand (Std.)</div><div class="field-hint" id="recruiterStundenHint">Stellenanzeige 2h + Sichten + Erstgespräche + Koordination 3h</div></div>
@@ -549,32 +541,27 @@ function calculate() {
   const bewerbungen   = g('bewerbungenAnzahl');
   const recruiterRate = g('recruiterRate');
   const deptRate      = g('deptRate');
+  const einladung1    = g('einladung1');
+  const einladung2    = g('einladung2');
 
-  const quote1 = g('quote1') / 100;
-  const quote2 = g('quote2') / 100;
-
-  const einladung1 = Math.max(2, Math.ceil(bewerbungen * quote1));
-  const einladung2 = Math.max(1, Math.ceil(einladung1 * quote2));
-
-  const interviewStunden = (einladung1 + einladung2) * 90/60;
+  const sichtungStd  = bewerbungen * 2/60;
+  const interviewStd = (einladung1 + einladung2) * 90/60;
 
   const recruiterStunden = 2
-    + (bewerbungen * 1/60)
-    + interviewStunden
+    + sichtungStd
+    + interviewStd
     + 3;
 
-  const fachbereichStunden = interviewStunden;
+  const fachbereichStunden = interviewStd;
 
   const rCost = recruiterStunden * recruiterRate;
   const dCost = fachbereichStunden * deptRate;
 
-  document.getElementById('einladung1Anzeige').textContent = einladung1 + ' Kandidaten';
-  document.getElementById('einladung2Anzeige').textContent = einladung2 + ' Kandidaten';
   document.getElementById('recruiterStundenAnzeige').textContent = recruiterStunden.toFixed(1) + ' Std.';
+  document.querySelector('#recruiterStundenAnzeige').closest('.field-row').querySelector('.field-hint').textContent =
+    `Stellenanzeige 2h + Sichten ${sichtungStd.toFixed(1)}h + Interviews ${interviewStd.toFixed(1)}h + Koordination 3h`;
   document.getElementById('fachbereichStundenAnzeige').textContent = fachbereichStunden.toFixed(1) + ' Std.';
-  document.getElementById('recruiterStundenHint').textContent =
-    `Stellenanzeige 2h + Sichten ${(bewerbungen/60).toFixed(1)}h + Interviews ${interviewStunden.toFixed(1)}h + Koordination 3h`;
-  document.getElementById('fachbereichStundenHint').textContent =
+  document.querySelector('#fachbereichStundenAnzeige').closest('.field-row').querySelector('.field-hint').textContent =
     `1. Interview ${(einladung1 * 1.5).toFixed(1)}h + 2. Interview ${(einladung2 * 1.5).toFixed(1)}h`;
   const boardCost = jobBoardTotal() + g('socialMedia') + g('otherAds');
   const hhCost    = document.getElementById('headhunterUsed').value === 'yes'
