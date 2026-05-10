@@ -221,6 +221,17 @@
     </div>
     <div class="field-row">
       <div>
+        <div class="field-label">Median Brutto/Monat (€)</div>
+        <div class="field-hint"><a id="atlasLink" href="https://web.arbeitsagentur.de/entgeltatlas/" target="_blank" style="color:var(--accent); text-decoration:underline;">BA Entgeltatlas öffnen ↗</a></div>
+      </div>
+      <input type="number" id="manualMedianMonat" placeholder="z. B. 3450" oninput="onManualMedian(this.value)" />
+    </div>
+    <div class="field-row">
+      <div class="field-label" style="color:var(--muted); font-size:.78rem;">= Jahreswert</div>
+      <span id="manualJahrDisplay" style="font-family:'DM Mono',monospace; font-size:.82rem; color:var(--muted);">–</span>
+    </div>
+    <div class="field-row">
+      <div>
         <div class="field-label">Engpassberuf</div>
         <div class="field-hint">Laut BA-Engpassanalyse — klicken für Details</div>
       </div>
@@ -404,34 +415,8 @@
       </div>
       <div id="vakanzProWoche" style="font-family:'DM Mono',monospace; font-size:1rem; font-weight:500; color:#78350F; text-align:right; flex-shrink:0; margin-left:12px;">–</div>
     </div>
-  </div>
 
-  <!-- BA-Marktdaten -->
-  <div class="ba-panel">
-    <h3>📡 BA-Marktdaten</h3>
-
-    <!-- Manueller Median -->
-    <div style="margin-top:.75rem; padding-top:.75rem; border-top:1px dashed #C6DDD0;">
-      <div style="font-size:.7rem; color:var(--accent); font-family:'DM Mono',monospace; margin-bottom:.4rem;">MEDIAN MANUELL (BA ENTGELTATLAS)</div>
-      <div style="font-size:.75rem; color:var(--muted); margin-bottom:.5rem;">
-        Beruf nachschlagen →
-        <a href="https://web.arbeitsagentur.de/entgeltatlas/" target="_blank"
-          style="color:var(--accent); text-decoration:underline;">BA Entgeltatlas öffnen ↗</a>
-      </div>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <div style="flex:1">
-          <div style="font-size:.72rem; color:var(--muted); margin-bottom:3px;">Median Brutto/Monat (€)</div>
-          <input type="number" id="manualMedianMonat" placeholder="z. B. 3450"
-            style="width:100%; text-align:left;" oninput="onManualMedian(this.value)" />
-        </div>
-        <div style="flex:1">
-          <div style="font-size:.72rem; color:var(--muted); margin-bottom:3px;">= Jahreswert</div>
-          <div id="manualJahrDisplay" style="font-family:'DM Mono',monospace; font-size:.82rem; padding:5px 8px; border:1px solid var(--border); border-radius:6px; background:var(--tag-bg); color:var(--muted);">–</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="benchmark-row" id="benchmarkRow" style="display:none">
+    <div class="benchmark-row" id="benchmarkRow" style="display:none; margin-top:8px;">
       <div class="benchmark-label">Gehalts-Benchmark</div>
       <span class="benchmark-pill" id="benchmarkPill">–</span>
     </div>
@@ -774,10 +759,18 @@ async function fetchEngpass(label) {
       badge.textContent    = '? nicht gefunden';
       detail.style.display = 'none';
       lastEngpassData      = null;
+      const atlasLinkFallback = document.getElementById('atlasLink');
+      if (atlasLinkFallback) { atlasLinkFallback.href = 'https://web.arbeitsagentur.de/entgeltatlas/'; atlasLinkFallback.textContent = 'BA Entgeltatlas öffnen ↗'; }
       return;
     }
 
     lastEngpassData = data;
+
+    const atlasLink = document.getElementById('atlasLink');
+    if (atlasLink && data.kennziffer) {
+      atlasLink.href = `https://web.arbeitsagentur.de/entgeltatlas/beruf/${data.kennziffer}`;
+      atlasLink.textContent = `${data.treffer} im Entgeltatlas ↗`;
+    }
 
     if (data.engpass) {
       badge.className   = 'engpass-badge engpass-ja';
